@@ -1,0 +1,40 @@
+
+
+server {
+    # Limit client body size globally for all servers
+    client_max_body_size 10000;
+
+    # Choose the port and host
+    listen 127.0.0.1:8080 default_server;
+
+    # Setup the server names
+    server_name mywebsite.com;
+
+    # Setup default error pages
+    error_page 404 /path/to/error_page.html;
+
+    # Routes
+    location /kapouet {
+
+        allow_methods GET POST
+
+        # Define a directory from where the file should be searched
+        root /tmp/www;
+
+        # Turn on directory listing
+        autoindex on;
+
+        # Set a default file to answer if the request is a directory
+        index default_file.html;
+
+        # Specific location for PHP files
+        fastcgi_pass   unix:/var/run/php/php7.3-fpm.sock;
+        client_body_temp_path /path/to/save/uploads;
+    }
+
+    # Redirect example
+    location /old-route/specific_path {
+        # Define a HTTP redirection for a specific path
+        rewrite /old-route/specific_path /new-route/specific_path;
+    }
+}
