@@ -1,31 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   MyException.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cschmied <cschmied@student.42wolfsburg.d>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/13 11:47:35 by cschmied          #+#    #+#             */
-/*   Updated: 2023/09/13 11:47:35 by cschmied         ###   ########.fr       */
+/*   Created: 2023/09/26 08:50:36 by cschmied          #+#    #+#             */
+/*   Updated: 2023/09/26 08:52:44 by cschmied         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-#define WEBSERV_HPP
+
+#ifndef WEBSERV_MYEXCEPTION_HPP
+#define WEBSERV_MYEXCEPTION_HPP
 
 #include <iostream>
-#include <map>
+#include <sstream>
+#include <colors.hpp>
 
-#define MAX_CONNECTIONS 5000
+class MyException {
+public:
+    MyException(std::string message, const char *file, int line);
+    ~MyException();
+	const char * what() const _NOEXCEPT;
+private:
+	std::string _msg;
+};
 
-typedef struct s_request {
-	std::string requestLine;
-	std::map<std::string, std::string> header;
-	const char *requestBody;
-} t_request;
-
-int writeFiletoFd(int fdOut, const char *path);
-int handleRequest(int fd);
-int handleGetRequest(t_request & request, int fd);
-
-#endif
+#endif //WEBSERV_MYEXCEPTION_HPP

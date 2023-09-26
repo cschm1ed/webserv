@@ -1,4 +1,7 @@
 
+#ifndef MAP_TPP
+#define MAP_TPP
+
 #include <map>
 
 template<typename T, typename K>
@@ -8,3 +11,5 @@ void printMap(std::map<T, K> map) {
 		std::cout << "key: '" << it->first << "', value: '" << it->second << "'\n";
 	}
 }
+
+#endif

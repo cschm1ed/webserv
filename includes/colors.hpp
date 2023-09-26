@@ -28,7 +28,6 @@
 #define    SYS_MSG_B "\033[48;5;242m❯ \033[3m\033[38;5;242m "
 #define G "\033[38;5;242m"
 #define SYS "\033[38;5;242m\033[4m\033[38;5;33m"
-#define INFO "\033[48;5;39m[ INFORMATION ]\033[0m \033[38;5;123m"
 #define BOLD "\033[1m"
 #define ITALIC "\033[3m"
 #define UNDERLINE "\033[4m"

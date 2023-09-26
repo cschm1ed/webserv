@@ -1,31 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   Router.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cschmied <cschmied@student.42wolfsburg.d>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/13 11:47:35 by cschmied          #+#    #+#             */
-/*   Updated: 2023/09/13 11:47:35 by cschmied         ###   ########.fr       */
+/*   Created: 2023/09/15 20:18:53 by cschmied          #+#    #+#             */
+/*   Updated: 2023/09/15 20:19:02 by cschmied         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-#define WEBSERV_HPP
+
+#ifndef WEBSERV_ROUTER_HPP
+#define WEBSERV_ROUTER_HPP
 
 #include <iostream>
 #include <map>
+#include <vector>
+#include <Parser.hpp>
+#include <map.tpp>
 
-#define MAX_CONNECTIONS 5000
+class Router {
+public:
+	Router(std::istream & serverConf);
+	~Router();
 
-typedef struct s_request {
-	std::string requestLine;
-	std::map<std::string, std::string> header;
-	const char *requestBody;
-} t_request;
+private:
+	std::string _name;
+	std::vector<std::map<std::string, std::string> > _routes;
+};
 
-int writeFiletoFd(int fdOut, const char *path);
-int handleRequest(int fd);
-int handleGetRequest(t_request & request, int fd);
 
-#endif
+#endif //WEBSERV_ROUTER_HPP

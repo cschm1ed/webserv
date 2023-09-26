@@ -3,7 +3,10 @@ BUILDDIR  := build
 VPATH	  := sources:sources/response
 CFLAGS    := -Wall -Werror -Wextra -std=c++98 -g
 CC        := g++
-SRCS      := main.cpp writeFileToFd.cpp handleRequest.cpp getRequest.cpp Server.cpp
+#SRCS      := main.cpp writeFileToFd.cpp handleRequest.cpp getRequest.cpp Server.cpp Logger.cpp \
+#			Parser.cpp
+SRCS	  := main.cpp Host.cpp Parser.cpp Router.cpp Server.cpp Logger.cpp MyException.cpp \
+			handleRequest.cpp getRequest.cpp writeFileToFd.cpp
 OBJS      := $(SRCS:%.cpp=$(BUILDDIR)/%.o)
 
 all: $(NAME)

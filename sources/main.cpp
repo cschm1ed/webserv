@@ -15,92 +15,37 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <colors.hpp>
-#include <unistd.h>
 #include <deque>
-#include <webserv.hpp>
+#include <sstream>
+#include <Logger.hpp>
+#include <Server.hpp>
 
-#define MAX_CONNECTIONS 5
+Logger *logger;
 
-#define PORT 8080
+int main(int argc, char **argv) {
+	Server *server = nullptr;
 
-static int setFindMax(fd_set &set);
+	if (argc != 2) {
+		std::cout << SYS_MSG RED << "ERROR: invalid input\n"R
+				  << "expected: './webserv <*.cnf>\n";
+		return 0;
+	}
 
-static int setupServerSocket(sockaddr_in &serverSocket, int  &serverFD);
-
-int main() {
-	sockaddr_in serverSocket, clientSocketTmp;
-	int maxFd, serverFd;
-	fd_set incoming, ready;
-	socklen_t clientSocketSize;
-	std::deque<int> clientFds;
-	std::deque <sockaddr_in> clientSockets;
-
-	if (setupServerSocket(serverSocket, serverFd) < 0) {
-		std::cout << RED << "ERROR: setting up server failed\n";
+	try {
+		logger = new Logger();
+	} catch (MyException & e) {
+		std::cerr << e.what();
 		return 1;
 	}
-	FD_ZERO(&incoming);
-	FD_SET(serverFd, &incoming);
 
-	while (1) {
-		ready = incoming;
-		maxFd = setFindMax(ready);
-
-		select(maxFd + 1, &ready, NULL, NULL, NULL);
-		for (int fd = 0; fd <= maxFd; fd++) {
-			if (FD_ISSET(fd, &ready)) {
-				if (fd == serverFd) {
-						clientSocketSize = sizeof(clientSocketTmp);
-						int clientDescriptor = accept(serverFd, (struct sockaddr *) &clientSocketTmp, &clientSocketSize);
-						if (clientDescriptor < 0) {
-							perror("accept(): ");
-							return 1;
-						}
-						clientFds.push_back(clientDescriptor);
-						FD_SET(clientDescriptor, &incoming);
-				} else {
-					handleRequest(fd);
-					FD_CLR(fd, &incoming);
-					close(fd);
-					clientFds.erase(std::find(clientFds.begin(), clientFds.end(), fd));
-				}
-			}
-		}
-
+	try {
+		server = new Server(argv[1]);
+	} catch (MyException & e) {
+		std::cerr << "Error: " << e.what() << "\n";
+		return 1;
 	}
-	close(serverFd);
-	return 1;
-}
 
-static int setupServerSocket(sockaddr_in &serverSocket, int & serverFd) {
-	serverFd = socket(AF_INET, SOCK_STREAM, 0);
-	socklen_t serverSize = sizeof(serverSocket);
-	int optval = 1;
+	server->run();
 
-	if (serverFd < 0) {
-		perror("socket(): ");
-		return -1;
-	}
-	serverSocket.sin_family = AF_INET;
-	serverSocket.sin_addr.s_addr = htonl(INADDR_ANY);
-	serverSocket.sin_port = htons(PORT);
-	if (bind(serverFd, (struct sockaddr *) &serverSocket, serverSize) < 0) {
-		perror("bind(): ");
-		return -1;
-	}
-	if (listen(serverFd, MAX_CONNECTIONS) < 0) {
-		perror("listen(): ");
-		return -1;
-	}
-	setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
-	return 0;
-}
-
-static int setFindMax(fd_set &set) {
-	for (int i = FD_SETSIZE; i > 0; --i) {
-		if (FD_ISSET(i, &set)) {
-			return i;
-		}
-	}
-	return 0;
+	delete server;
 }
