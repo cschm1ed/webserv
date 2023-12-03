@@ -23,10 +23,10 @@
 Logger *logger;
 
 int main(int argc, char **argv) {
-	Server *server = nullptr;
+	Server *server = NULL;
 
 	if (argc != 2) {
-		std::cout << SYS_MSG RED << "ERROR: invalid input\n"R
+		std::cout << SYS_MSG RED << "ERROR: invalid input\n" << R
 				  << "expected: './webserv <*.cnf>\n";
 		return 0;
 	}

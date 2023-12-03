@@ -19,7 +19,6 @@
 #include <fstream>
 #include <map>
 #include <algorithm>
-#include <array>
 #include <cctype>
 #include <colors.hpp>
 #include <iosfwd>
@@ -37,7 +36,7 @@ public:
 
 class ConfigError : public std::exception {
 public:
-	const char * what() const _NOEXCEPT;
+	const char * what() const throw() ;
 };
 
 	static int parseInt(std::map<std::string, std::string> & config, std::string key);

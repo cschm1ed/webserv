@@ -139,9 +139,9 @@ std::map<int, std::string> Parser::parseErrorPages(std::map<std::string, std::st
 }
 
 void Parser::checkRoute(std::map<std::string, std::string> &conf) {
+    const char* array[] = {"allow_methods", "root", "autoindex", "index", "cgi_pass", "upload_path", "client_body_temp_path", "rewrite", "location"};
 	std::map<std::string, std::string>::const_iterator it;
-	std::array<std::string, 9> allowed = {"allow_methods", "root", "autoindex", "index", "cgi_pass", "upload_path",
-										  "client_body_temp_path" , "rewrite", "location"};
+    std::vector<std::string> allowed(array, array + sizeof(array) / sizeof(array[0]));
 
 	for (it = conf.begin(); it != conf.end(); ++it) {
 		if (std::find(allowed.begin(), allowed.end(), (it->first)) == allowed.end()) {

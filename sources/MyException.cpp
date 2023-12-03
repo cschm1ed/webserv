@@ -16,8 +16,8 @@ MyException::MyException(std::string message, const char *file, int line) {
 	std::stringstream ss;
 
 	ss << ITALIC << SYS_MSG << RED << "An exception occured. file: '" <<
-		R << file << ITALIC << SYS_MSG << RED << "' line: '" << R << line << ITALIC << SYS_MSG << RED << "'\n"R;
-	ss << RED << message << "\n"R;
+		R << file << ITALIC << SYS_MSG << RED << "' line: '" << R << line << ITALIC << SYS_MSG << RED << "'\n" << R;
+	ss << RED << message << "\n" << R;
 	_msg = ss.str();
 }
 

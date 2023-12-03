@@ -13,8 +13,10 @@
 #include <iostream>
 #include <colors.hpp>
 #include <unistd.h>
+#include <stdio.h>
 #include <sys/fcntl.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 
 #ifdef __APPLE__
 
@@ -46,7 +48,7 @@ int writeFiletoFd(int fdOut, const char *path) {
 
     if (fdIn < 0) {
         perror("open(): ");
-        std::cout << RED << "ERROR: opening" << path << " failed\n" << RESET;
+        std::cout << RED << "ERROR: opening" << path << " failed\n" << R;
         return -1;
     }
     if (fstat(fdIn, &stat_buf) < 0) {

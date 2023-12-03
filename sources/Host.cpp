@@ -15,7 +15,7 @@
 
 extern Logger *logger;
 
-Host::Host(std::istream & configuration) : _router(nullptr) {
+Host::Host(std::istream & configuration) : _router(NULL) {
 	std::stringstream cpy;
 
 	cpy.clear();

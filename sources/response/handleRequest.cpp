@@ -17,6 +17,7 @@
 #include <iostream>
 #include <sstream>
 #include <map.tpp>
+#include <stdio.h>
 
 static int fdToStringstream(int fd, std::stringstream & request);
 
@@ -53,7 +54,7 @@ int handleRequest(int fd) {
 
 static int fdToStringstream(int fd, std::stringstream & request) {
 	char buffer[1024];
-	size_t readBytes;
+	int readBytes;
 
 	do  {
 		readBytes = read(fd, buffer, 1023);

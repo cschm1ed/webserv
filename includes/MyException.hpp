@@ -22,7 +22,7 @@ class MyException {
 public:
     MyException(std::string message, const char *file, int line);
     ~MyException();
-	const char * what() const _NOEXCEPT;
+	const char * what() const throw() ;
 private:
 	std::string _msg;
 };

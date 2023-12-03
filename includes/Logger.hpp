@@ -36,7 +36,7 @@ public:
 
 	class OpenLogfileFailed : public std::exception {
 	public:
-		const char *what() const _NOEXCEPT;
+		virtual const char *what() const throw() ;
 	};
 
 private:

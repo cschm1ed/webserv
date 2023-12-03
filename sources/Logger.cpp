@@ -32,17 +32,17 @@ void Logger::log(const std::string &entity, const std::string &message, int leve
 	switch (level) {
 		case ERROR:
 			logMessage += SYS_MSG;
-			logMessage += RED"-- " + entity + "encountered an error --\n"R;
+			logMessage += RED"-- " + entity + "encountered an error --\n" + R;
 			break ;
 		case INFO:
 			logMessage += SYS_MSG;
-			logMessage += GREEN"-- " + entity + " --\n"R;
+			logMessage += GREEN"-- " + entity + " --\n" + R;
 			break ;
 		case REQUEST:
-			logMessage += MAGENTA"-- " + entity + " recieved a request --\n"R;
+			logMessage += MAGENTA"-- " + entity + " recieved a request --\n" + R;
 			break ;
 		case RESPONSE:
-			logMessage += BLUE"-- " + entity + " sent a response --\n"R;
+			logMessage += BLUE"-- " + entity + " sent a response --\n" + R;
 			break ;
 		default:
 			logMessage += "-- log message --\n";
