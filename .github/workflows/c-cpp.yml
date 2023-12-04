@@ -12,5 +12,5 @@ jobs:
     - name: make
       run: make
     - name: start Webserver
-      run: ./webserv
+      run: ./webserv resources/configs/conf1.cnf
 
