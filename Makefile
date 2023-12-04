@@ -26,4 +26,11 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: clean all re fclean
+kill:
+	bash kill.sh
+
+run: kill re
+	./webserv resources/configs/conf1.cnf
+
+
+.PHONY: clean all re fclean kill
