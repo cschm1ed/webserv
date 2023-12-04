@@ -13,4 +13,6 @@ jobs:
       run: make
     - name: start Webserver
       run: ./webserv resources/configs/conf1.cnf
+    - name: Check Reachability of webserv
+      run: bash wait-for-startup.sh
 
