@@ -12,7 +12,7 @@ jobs:
     - name: make
       run: make
     - name: start Webserver
-      run: ./webserv resources/configs/conf1.cnf
+      run: bash -ec 'nohup ./webserv resources/configs/conf1.cnf'
     - name: Check Reachability of webserv
       run: bash wait-for-startup.sh
 
