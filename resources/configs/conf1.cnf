@@ -25,6 +25,4 @@ server {
         root /tmp/www
     }
 
-    location cgi bl
-
 }
