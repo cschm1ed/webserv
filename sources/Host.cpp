@@ -13,8 +13,6 @@
 #include <sstream>
 #include <Host.hpp>
 
-extern Logger *logger;
-
 Host::Host(std::istream & configuration) : _router(NULL) {
 	std::stringstream cpy;
 
@@ -43,7 +41,6 @@ Host::Host(std::istream & configuration) : _router(NULL) {
 }
 
 Host::~Host() {
-	logger->log("server", "destroyed server", INFO);
 //	delete _router;
 }
 

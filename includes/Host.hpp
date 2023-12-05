@@ -17,7 +17,6 @@
 #include <map>
 #include <vector>
 #include <Router.hpp>
-#include <Logger.hpp>
 #include <map.tpp>
 
 class Router;

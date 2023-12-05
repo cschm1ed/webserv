@@ -4,7 +4,7 @@ VPATH	  := sources:sources/response
 CFLAGS    := -Wall -Werror -Wextra -std=c++98 -g -I includes -D DEBUG=1
 CC        := g++
 
-SRCS	  := main.cpp Host.cpp Parser.cpp Router.cpp Server.cpp Logger.cpp MyException.cpp \
+SRCS	  := main.cpp Host.cpp Parser.cpp Router.cpp Server.cpp  MyException.cpp \
 			handleRequest.cpp  writeFileToFd.cpp
 OBJS      := $(SRCS:%.cpp=$(BUILDDIR)/%.o)
 

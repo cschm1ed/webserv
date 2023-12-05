@@ -17,10 +17,8 @@
 #include <colors.hpp>
 #include <deque>
 #include <sstream>
-#include <Logger.hpp>
 #include <Server.hpp>
 
-Logger *logger;
 
 int main(int argc, char **argv) {
 	Server *server = NULL;
@@ -29,13 +27,6 @@ int main(int argc, char **argv) {
 		std::cout << SYS_MSG RED << "ERROR: invalid input\n" << R
 				  << "expected: './webserv <*.cnf>\n";
 		return 0;
-	}
-
-	try {
-		logger = new Logger();
-	} catch (MyException & e) {
-		std::cerr << e.what();
-		return 1;
 	}
 
 	try {

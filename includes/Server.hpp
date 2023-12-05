@@ -18,6 +18,7 @@
 #include <vector>
 #include <Host.hpp>
 #include <istream>
+#include <unistd.h>
 #include <MyException.hpp>
 #include <sys/socket.h>
 #include <arpa/inet.h>

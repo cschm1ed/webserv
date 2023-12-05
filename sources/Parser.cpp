@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include <Parser.hpp>
+#include <MyException.hpp>
 
 std::vector<std::string> Parser::splitBlocks(std::istream &ss, std::string const &identifier) {
 	std::vector<std::string> output;
