@@ -19,15 +19,19 @@
 #include <vector>
 #include <Parser.hpp>
 #include <map.tpp>
+#include <webserv.hpp>
 
 class Router {
 public:
 	Router(std::istream & serverConf);
 	~Router();
 
+	void handleRequestLine(std::vector<std::string> & requestLine, t_request & request);
+
 private:
 	std::string _name;
 	std::vector<std::map<std::string, std::string> > _routes;
+	std::string routeExists(std::string & route);
 };
 
 

@@ -17,11 +17,16 @@
 #include <map>
 
 #define MAX_CONNECTIONS 5000
+#define INVALID -1
+#define DONE 1
+#define SEND 0;
 
 typedef struct s_request {
 	std::string requestLine;
 	std::map<std::string, std::string> header;
 	const char *requestBody;
+	std::string returnFile;
+	int state;
 } t_request;
 
 int writeFiletoFd(int fdOut, const char *path);

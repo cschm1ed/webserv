@@ -18,6 +18,7 @@
 #include <sstream>
 #include <map.tpp>
 #include <stdio.h>
+#include <Parser.hpp>
 
 static int fdToStringstream(int fd, std::stringstream & request);
 
@@ -44,17 +45,29 @@ int handleRequest(int fd) {
 		std::string tmp = requestStream.str();
 		request.requestBody = tmp.c_str();
 	}
+
 	std::cout << GREEN << "got request: " << request.requestLine << std::endl;
 	printMap(request.header);
-	handleGetRequest(request, fd);
+	std::vector<std::string> requestLine = Parser::splitByWhitespace(request.requestLine);
+	write(fd, "HTTP/1.1 200 OK"
+			  "Content-Type: text/html; charset=UTF-8\n\n"
+			  "<!DOCTYPE html>\n"
+			  "<html>\n"
+			  "<body>\n"
+			  "<h1>Hello World, Hello 42!</h1>\n"
+			  "<picture>\n"
+			  "    <source media=\"(min-width:400px)\" srcset=\"resources/assets/images/sillyCat.jpg\">\n"
+			  "    <img src=\"/assets/images/sillyCat.jpg\" alt=\"A silly cat\">\n"
+			  "</picture>\n"
+			  "</body>\n"
+			  "</html>", 245);
 	return 0;
 }
-
-
 
 static int fdToStringstream(int fd, std::stringstream & request) {
 	char buffer[1024];
 	int readBytes;
+
 
 	do  {
 		readBytes = read(fd, buffer, 1023);

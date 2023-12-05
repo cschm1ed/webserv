@@ -98,7 +98,6 @@ void Server::run() {
 				}
 			}
 		}
-
 	}
 }
 

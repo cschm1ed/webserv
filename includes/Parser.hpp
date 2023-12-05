@@ -44,13 +44,14 @@ public:
 	static void parseHost(Host & server, std::map<std::string, std::string> & config);
 	static void checkRoute(std::map<std::string, std::string> & conf);
 
+	static bool notWhitespace(const char c);
+	static bool isWhitespace(const char c);
+	static std::vector<std::string>splitByWhitespace(const std::string & str);
 private:
 
 	static std::vector<std::string> parseStringArray();
 	static std::map<int, std::string> parseErrorPages(std::map<std::string, std::string> & config);
 	static std::string readBlock(std::istream & ss);
-	static bool isWhitespace(const char c);
-	static bool notWhitespace(const char c);
 
 	~Parser();
 	Parser();

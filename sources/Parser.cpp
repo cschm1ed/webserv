@@ -162,6 +162,29 @@ bool Parser::isComment(std::string line) {
 	return false;
 }
 
+std::vector<std::string> Parser::splitByWhitespace(const std::string& input) {
+	std::vector<std::string> result;
+
+	std::string::const_iterator start = input.begin();
+	std::string::const_iterator end = input.begin();
+
+	while (end != input.end()) {
+		if (isWhitespace(*end)) {
+			if (start != end) {
+				result.push_back(std::string(start, end));
+			}
+			start = end + 1;
+		}
+		++end;
+	}
+
+	if (start != end) {
+		result.push_back(std::string(start, end));
+	}
+
+	return result;
+}
+
 const char *Parser::ConfigError::what() const throw() {
 	return "ERROR: invalid configuration file\n";
 }

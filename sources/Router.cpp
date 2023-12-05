@@ -43,3 +43,33 @@ Router::Router(std::istream & serverConf) {
 Router::~Router() {
 
 }
+
+std::string Router::routeExists(std::string &route) {
+	std::vector<std::map<std::string, std::string> >::iterator it;
+	std::string root;
+
+	for (it = _routes.begin(); it != _routes.end(); ++it) {
+		root = (*it)["loaction"];
+		if (route.compare(0, root.size(), root, 0, root.size()) == 0) {
+			return (*it)["root"];
+		}
+	}
+	return "";
+}
+
+void Router::handleRequestLine(std::vector<std::string> &requestLine, t_request &request) {
+	std::string location;
+
+	if (requestLine.size() != 3) {
+		request.state = INVALID;
+		return ;
+	}
+	location = requestLine[1].substr(1, requestLine[1].find('/', 1));
+	location = routeExists(location);
+	std::cout << BLUE <<  "location: " <<  location << "\n";
+	if (location == "") {
+		request.state = INVALID;
+		return ;
+	}
+
+}
