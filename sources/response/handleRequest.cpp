@@ -11,14 +11,6 @@
 /* ************************************************************************** */
 
 #include <webserv.hpp>
-#include <colors.hpp>
-#include <unistd.h>
-#include <fcntl.h>
-#include <iostream>
-#include <sstream>
-#include <map.tpp>
-#include <stdio.h>
-#include <Parser.hpp>
 
 static int fdToStringstream(int fd, std::stringstream & request);
 

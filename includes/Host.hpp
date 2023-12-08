@@ -13,11 +13,7 @@
 #ifndef WEBSERV_HOST_HPP
 #define WEBSERV_HOST_HPP
 
-#include <iostream>
-#include <map>
-#include <vector>
-#include <Router.hpp>
-#include <map.tpp>
+#include <webserv.hpp>
 
 class Router;
 

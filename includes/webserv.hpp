@@ -13,8 +13,38 @@
 #ifndef WEBSERV_HPP
 #define WEBSERV_HPP
 
+typedef struct s_request t_request;
+
+class Router;
+class Host;
+class Parser;
+class Server;
+
 #include <iostream>
 #include <map>
+#include <vector>
+#include <map.tpp>
+#include <istream>
+#include <unistd.h>
+#include <MyException.hpp>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <sys/select.h>
+#include <sys/fcntl.h>
+#include <vector>
+#include <netinet/in.h>
+#include <colors.hpp>
+#include <sstream>
+#include <iosfwd>
+#include <cstring>
+#include <cctype>
+#include <map>
+#include <fstream>
+#include <Router.hpp>
+#include <Host.hpp>
+#include <Server.hpp>
+#include <Router.hpp>
+#include <Parser.hpp>
 
 #define MAX_CONNECTIONS 5000
 #define INVALID -1

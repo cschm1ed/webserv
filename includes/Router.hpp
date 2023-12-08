@@ -14,11 +14,6 @@
 #ifndef WEBSERV_ROUTER_HPP
 #define WEBSERV_ROUTER_HPP
 
-#include <iostream>
-#include <map>
-#include <vector>
-#include <Parser.hpp>
-#include <map.tpp>
 #include <webserv.hpp>
 
 class Router {

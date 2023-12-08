@@ -14,9 +14,7 @@
 #ifndef WEBSERV_MYEXCEPTION_HPP
 #define WEBSERV_MYEXCEPTION_HPP
 
-#include <iostream>
-#include <sstream>
-#include <colors.hpp>
+#include <webserv.hpp>
 
 class MyException {
 public:

@@ -13,17 +13,6 @@
 #ifndef WEBSERV_SERVER_HPP
 #define WEBSERV_SERVER_HPP
 
-#include <iostream>
-#include <algorithm>
-#include <vector>
-#include <Host.hpp>
-#include <istream>
-#include <unistd.h>
-#include <MyException.hpp>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <sys/select.h>
-#include <netinet/in.h>
 #include <webserv.hpp>
 
 typedef struct s_socket {

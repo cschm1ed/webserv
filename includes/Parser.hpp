@@ -13,16 +13,6 @@
 #ifndef WEBSERV_PARSER_HPP
 #define WEBSERV_PARSER_HPP
 
-#include <iostream>
-#include <vector>
-#include <sstream>
-#include <fstream>
-#include <map>
-#include <algorithm>
-#include <cctype>
-#include <colors.hpp>
-#include <iosfwd>
-#include <cstring>
 #include <Host.hpp>
 
 class Host;

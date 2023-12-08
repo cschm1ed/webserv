@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <Router.hpp>
+#include <webserv.hpp>
 
 Router::Router(std::istream & serverConf) {
 	std::vector<std::string> routesConf;

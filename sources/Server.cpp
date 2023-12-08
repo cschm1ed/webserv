@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <Server.hpp>
+#include <webserv.hpp>
 
 Server::Server(std::string const & config) {
 	std::ifstream infile(config.c_str(), std::ios_base::in);

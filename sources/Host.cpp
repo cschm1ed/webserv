@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <sstream>
-#include <Host.hpp>
+#include <webserv.hpp>
 
 Host::Host(std::istream & configuration) : _router(NULL) {
 	std::stringstream cpy;

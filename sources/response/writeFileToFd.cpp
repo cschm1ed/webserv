@@ -10,13 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <colors.hpp>
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/fcntl.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
+#include <webserv.hpp>
 
 #ifdef __APPLE__
 

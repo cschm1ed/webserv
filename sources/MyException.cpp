@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <MyException.hpp>
+#include <webserv.hpp>
 
 MyException::MyException(std::string message, const char *file, int line) {
 	std::stringstream ss;
