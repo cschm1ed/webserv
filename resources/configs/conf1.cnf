@@ -4,6 +4,7 @@ server {
     client_max_body_size 10000
     listen 127.0.0.1:8080
     server_name mywebsite.com
+
     error_page_404 /path/to/error_page.html
 
     location /kapouet {

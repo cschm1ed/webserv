@@ -23,6 +23,7 @@ int handleRequest(int fd) {
 
 	{
 		std::string line;
+
 		while (std::getline(requestStream, line)) {
 			if (requestStream.fail()) {
 				perror("getline(): ");
