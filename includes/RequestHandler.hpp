@@ -22,7 +22,7 @@ public:
 
 
 private:
-	t_request parseRequest(int fd);
+	static t_request parseRequest(int fd);
 
 	RequestHandler();
 	~RequestHandler();

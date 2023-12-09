@@ -39,6 +39,20 @@ Host::Host(std::istream & configuration) : _router(NULL) {
 	Parser::parseHost(*this, _config);
 }
 
+void Host::sendErrorPage(int fd, int error) {
+	std::stringstream errorPagePath;
+
+	if (_error_pages.find(error) != _error_pages.end()) {
+		if (writeFiletoFd(fd, _error_pages[error].c_str()) == 0) {
+			return ;
+		}
+	}
+	errorPagePath << PATH_STD_ERRORPAGES << error << ".html";
+	if (writeFiletoFd(fd, errorPagePath.str().c_str()) != 0) {
+		write (fd, "ERROR 500 internal server error\n", 32);
+	}
+}
+
 Host::~Host() {
 //	delete _router;
 }
@@ -57,4 +71,8 @@ void Host::setIp(const std::string &ip) {
 
 double Host::getPort() const {
 	return _port;
+}
+
+const std::string &Host::getName() const {
+	return _name;
 }

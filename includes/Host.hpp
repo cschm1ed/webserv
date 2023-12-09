@@ -25,10 +25,11 @@ public:
 	const std::string &getIp() const;
 
 	void setIp(const std::string &ip);
-
 	void setPort(double port);
-
 	double getPort() const;
+
+	const std::string &getName() const;
+	void sendErrorPage(int fd, int error);
 
 private:
 

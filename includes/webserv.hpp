@@ -46,6 +46,11 @@ class Server;
 #include <Router.hpp>
 #include <Parser.hpp>
 
+#ifdef __linux__
+# include <sys/sendfile.h>
+#endif
+
+#define PATH_STD_ERRORPAGES "./resources/error_pages/"
 #define MAX_CONNECTIONS 5000
 #define INVALID -1
 #define DONE 1

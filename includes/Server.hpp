@@ -13,6 +13,8 @@
 #ifndef WEBSERV_SERVER_HPP
 #define WEBSERV_SERVER_HPP
 
+#define PATH_STD_ERROR_PAGES
+
 #include <webserv.hpp>
 #include <RequestHandler.hpp>
 

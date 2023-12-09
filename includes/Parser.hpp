@@ -37,6 +37,8 @@ public:
 	static bool notWhitespace(const char c);
 	static bool isWhitespace(const char c);
 	static std::vector<std::string>splitByWhitespace(const std::string & str);
+	static int fdToStringstream(int fd, std::stringstream & request);
+
 private:
 
 	static std::vector<std::string> parseStringArray();
