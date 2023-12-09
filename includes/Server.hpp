@@ -13,7 +13,10 @@
 #ifndef WEBSERV_SERVER_HPP
 #define WEBSERV_SERVER_HPP
 
+#define PATH_STD_ERROR_PAGES
+
 #include <webserv.hpp>
+#include <RequestHandler.hpp>
 
 typedef struct s_socket {
 	sockaddr_in socket;
@@ -37,6 +40,8 @@ private:
 	void setupSockets(void);
 	int setFindMaxFd(fd_set &set);
 
+	std::vector<Host>::const_iterator *socketHostPairs;
+	std::map<int, Host*> _clientFdToSocketOwner;
 	std::vector<t_socket > _sockets;
     std::vector<Host> _hosts;
 	fd_set _incoming, _ready;

@@ -185,6 +185,22 @@ std::vector<std::string> Parser::splitByWhitespace(const std::string& input) {
 	return result;
 }
 
+int Parser::fdToStringstream(int fd, std::stringstream & request) {
+	char buffer[1024];
+	int readBytes;
+
+
+	do  {
+		readBytes = read(fd, buffer, 1023);
+		if (readBytes < 0) {
+			perror("read(): ");
+			return -1;
+		}
+		request << buffer;
+	} while (readBytes == 1024);
+	return 1;
+}
+
 const char *Parser::ConfigError::what() const throw() {
 	return "ERROR: invalid configuration file\n";
 }

@@ -39,6 +39,61 @@ Host::Host(std::istream & configuration) : _router(NULL) {
 	Parser::parseHost(*this, _config);
 }
 
+std::string Host::createErrorHeader(int errorCode) {
+	std::stringstream output;
+
+	output << "HTTP/1.1 " << errorCode;
+	switch (errorCode) {
+		case 403:
+			output << " Forbidden";
+			break;
+		case 404:
+			output << " Not Found";
+			break;
+		case 429:
+			output << " Too Many Requests";
+			break;
+		case 502:
+			output << " Bad Gateway";
+			break;
+		case 503:
+			output << " Service Unavailable";
+			break;
+		case 504:
+			output << " Gateway Timeout";
+			break;
+		default: // 500
+			output << " Internal Server Error";
+	}
+	output << "\n";
+	output << "Server: 42webserv\n";
+	output << "Content-Type: text/html; charset=utf-8\n";
+	output << "Access-Control-Allow-Origin: *\n";
+	output << "Connection: close\n";
+	return output.str();
+}
+
+
+void Host::sendErrorPage(int fd, int error) {
+	std::stringstream errorPagePath;
+	std::string errorHeader;
+
+	errorHeader = createErrorHeader(error);
+	errorHeader += "\n\n";
+	write(fd, errorHeader.c_str(), errorHeader.size());
+	if (_error_pages.find(error) != _error_pages.end()) {
+		if (writeFiletoFd(fd, _error_pages[error].c_str()) == 0) {
+			return ;
+		}
+	}
+	errorPagePath << PATH_STD_ERRORPAGES  << "_site/" << error << ".html";
+	if (writeFiletoFd(fd, errorPagePath.str().c_str()) != 0) {
+		//errorHeader = createErrorHeader(500).c_str();
+		errorHeader += "\n\nInternal Server Error";
+		write(fd, errorHeader.c_str(), errorHeader.size());
+	}
+}
+
 Host::~Host() {
 //	delete _router;
 }
@@ -57,4 +112,8 @@ void Host::setIp(const std::string &ip) {
 
 double Host::getPort() const {
 	return _port;
+}
+
+const std::string &Host::getName() const {
+	return _name;
 }

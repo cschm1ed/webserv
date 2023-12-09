@@ -16,12 +16,18 @@
 
 #include <webserv.hpp>
 
+typedef struct s_route {
+	std::string location;
+	int error_code;
+} t_route;
+
 class Router {
 public:
 	Router(std::istream & serverConf);
 	~Router();
 
 	void handleRequestLine(std::vector<std::string> & requestLine, t_request & request);
+	t_route getRoute(std::string & requested);
 
 private:
 	std::string _name;
