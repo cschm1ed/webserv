@@ -82,7 +82,7 @@ void Server::run() {
 					if (it->fd == fd) {
 						clientSize = sizeof(sockaddr_in);
 						clientDescriptor = accept(it->fd, (struct sockaddr *) &clientSocket, &clientSize);
-						_clientFdToSocketOwner[fd] = &_hosts[it - _sockets.begin()];
+						_clientFdToSocketOwner[clientDescriptor] = &_hosts[it - _sockets.begin()];
 						if (clientDescriptor < 0) {
 							perror("accept(): ");
 							throw MyException("accepting client failed", __FILE__, __LINE__);
@@ -93,7 +93,7 @@ void Server::run() {
 					}
 				}
 				if (done == false) {
-					RequestHandler::handleRequest(fd, NULL);
+					RequestHandler::handleRequest(fd, _clientFdToSocketOwner[fd]);
 					FD_CLR(fd, &_incoming);
 					close(fd);
 				}

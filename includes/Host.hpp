@@ -36,6 +36,7 @@ private:
 	std::string _name;
 	std::string _IP;
 	std::map<int, std::string> _error_pages;
+	std::string createErrorHeader(int errorCode);
 	double _maxBodySize;
 	double _port;
 

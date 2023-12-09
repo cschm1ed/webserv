@@ -1,7 +1,7 @@
 NAME      := webserv
 BUILDDIR  := build
 VPATH	  := sources:sources/response
-CFLAGS    := -Wall -Werror -Wextra -std=c++98 -g -I includes -D DEBUG=1 -fsanitize=address
+CFLAGS    := -Wall -Werror -Wextra -std=c++98 -g -I includes -D DEBUG=1
 CC        := g++
 
 SRCS	  := main.cpp Host.cpp Parser.cpp Router.cpp Server.cpp  MyException.cpp \

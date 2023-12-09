@@ -38,6 +38,7 @@ class Server;
 #include <iosfwd>
 #include <cstring>
 #include <cctype>
+#include <vector.tpp>
 #include <map>
 #include <fstream>
 #include <Router.hpp>

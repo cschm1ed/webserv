@@ -16,7 +16,8 @@ int RequestHandler::handleRequest(int fd, Host *socketOwner) {
 	t_request request = parseRequest(fd);
 
 	if (request.requestLine.empty() || request.header["Host"] != socketOwner->getName()) {
-		socketOwner->sendErrorPage(fd, 400);
+		std::cout << "seonding Error 404\n";
+		socketOwner->sendErrorPage(fd, 404);
 	}
 	return 0;
 }
