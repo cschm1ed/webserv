@@ -47,6 +47,7 @@ t_request RequestHandler::parseRequest(int fd) {
 		std::string line;
 
 		while (std::getline(requestStream, line)) {
+			line.erase(std::remove(line.begin(), line.end(), '\r'));
 			if (requestStream.fail()) {
 				perror("getline(): ");
 				return request;
