@@ -12,7 +12,7 @@
 
 #include <webserv.hpp>
 
-Router::Router(std::istream & serverConf) {
+Router::Router(std::istream &serverConf) {
 	std::vector<std::string> routesConf;
 	std::vector<std::string>::const_iterator it;
 	std::map<std::string, std::string> routeConf;
@@ -53,8 +53,7 @@ std::map<std::string, std::string> *Router::routeExists(std::string &route) {
 		if (route == "/") {
 			if (route == root)
 				return &(*it);
-		}
-		else if (route.compare(0, root.size(), root, 0, root.size()) == 0)
+		} else if (route.compare(0, root.size(), root, 0, root.size()) == 0)
 			return &(*it);
 	}
 	return NULL;
@@ -63,25 +62,42 @@ std::map<std::string, std::string> *Router::routeExists(std::string &route) {
 int Router::checkRequestLine(t_request request) {
 	std::string location, method, protocol;
 	std::map<std::string, std::string> *route;
+	std::vector<std::string> splitLine = Parser::splitByWhitespace(request.requestLine);
 
-	if (request.requestLine.size() != 3) {
+	if (splitLine.size() != 3) {
+		//<editor-fold desc="Description">
+		std::cout << RED << "ERROR: invalid request line\n";
+		std::cout << "request line: " << request.requestLine << "\n" << R;
+		//</editor-fold>
 		request.state = INVALID;
 		return 400;
 	}
-	method = request.requestLine[0];
-	location = request.requestLine[1];
-	protocol = request.requestLine[2];
+	method = splitLine[0];
+	location = splitLine[1];
+	protocol = splitLine[2];
 	route = routeExists(location);
-	if (!protocolIsSupported(protocol))
+	if (!protocolIsSupported(protocol)) {
+		//<editor-fold desc="logging">
+		std::cout << RED << "Error: Requested protocol is not supported\n" << R;
+		//</editor-fold>
 		return 505;
-	if (!route)
+	}
+	if (!route) {
+		//<editor-fold desc="logging">
+		std::cout << RED << "Error: route does not exist\n" << R;
+		//</editor-fold>
 		return 404;
-	if (!methodIsAllowed(method, route))
+	}
+	if (!methodIsAllowed(method, route)) {
+		//<editor-fold desc="Description">
+		std::cout << RED << "Error: method is not allowed on this route\n" << R;
+		//</editor-fold>
 		return 403;
+	}
 	return 200;
 }
 
-bool	Router::methodIsAllowed(std::string &method, std::map<std::string, std::string> *route) {
+bool Router::methodIsAllowed(std::string &method, std::map<std::string, std::string> *route) {
 	if (route->find("allowed_methods") != route->end()) {
 		return false;
 	}
@@ -91,7 +107,7 @@ bool	Router::methodIsAllowed(std::string &method, std::map<std::string, std::str
 	return false;
 }
 
-bool	Router::protocolIsSupported(std::string &protocol) {
+bool Router::protocolIsSupported(std::string &protocol) {
 	if (protocol == "HTTP/1.1")
 		return true;
 	return false;
