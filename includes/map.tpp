@@ -12,6 +12,7 @@ void printMap(std::map<T, K> map) {
 	for (it = map.begin(); it != map.end(); ++it) {
 		std::cout << "key: '" << it->first << "', value: '" << it->second << "'\n";
 	}
+	std::cout << "\n";
 }
 
 #endif

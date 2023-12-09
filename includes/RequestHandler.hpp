@@ -18,7 +18,7 @@
 
 class RequestHandler {
 public:
-	static int handleRequest(int fd, Host *socketOwner);
+	static void handleRequest(int fd, Host *socketOwner);
 
 
 private:

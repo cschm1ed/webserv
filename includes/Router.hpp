@@ -16,23 +16,19 @@
 
 #include <webserv.hpp>
 
-typedef struct s_route {
-	std::string location;
-	int error_code;
-} t_route;
-
 class Router {
 public:
+	int checkRequestLine(t_request request);
 	Router(std::istream & serverConf);
 	~Router();
-
-	void handleRequestLine(std::vector<std::string> & requestLine, t_request & request);
-	t_route getRoute(std::string & requested);
 
 private:
 	std::string _name;
 	std::vector<std::map<std::string, std::string> > _routes;
-	std::string routeExists(std::string & route);
+	std::map<std::string, std::string> *routeExists(std::string & route);
+	bool methodIsAllowed(std::string & method, std::map<std::string, std::string> *route);
+	bool protocolIsSupported(std::string & protocol);
+
 };
 
 

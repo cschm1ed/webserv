@@ -117,3 +117,7 @@ double Host::getPort() const {
 const std::string &Host::getName() const {
 	return _name;
 }
+
+Router *Host::getRouter() const {
+	return _router;
+}

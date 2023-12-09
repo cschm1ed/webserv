@@ -61,7 +61,6 @@ typedef struct s_request {
 	std::string requestLine;
 	std::map<std::string, std::string> header;
 	const char *requestBody;
-	std::string returnFile;
 	int state;
 } t_request;
 

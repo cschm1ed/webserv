@@ -31,6 +31,8 @@ public:
 	const std::string &getName() const;
 	void sendErrorPage(int fd, int error);
 
+	Router *getRouter() const;
+
 private:
 
 	std::string _name;

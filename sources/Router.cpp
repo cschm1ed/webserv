@@ -44,32 +44,55 @@ Router::~Router() {
 
 }
 
-std::string Router::routeExists(std::string &route) {
+std::map<std::string, std::string> *Router::routeExists(std::string &route) {
 	std::vector<std::map<std::string, std::string> >::iterator it;
 	std::string root;
 
 	for (it = _routes.begin(); it != _routes.end(); ++it) {
 		root = (*it)["loaction"];
-		if (route.compare(0, root.size(), root, 0, root.size()) == 0) {
-			return (*it)["root"];
+		if (route == "/") {
+			if (route == root)
+				return &(*it);
 		}
+		else if (route.compare(0, root.size(), root, 0, root.size()) == 0)
+			return &(*it);
 	}
-	return "";
+	return NULL;
 }
 
-void Router::handleRequestLine(std::vector<std::string> &requestLine, t_request &request) {
-	std::string location;
+int Router::checkRequestLine(t_request request) {
+	std::string location, method, protocol;
+	std::map<std::string, std::string> *route;
 
-	if (requestLine.size() != 3) {
+	if (request.requestLine.size() != 3) {
 		request.state = INVALID;
-		return ;
+		return 400;
 	}
-	location = requestLine[1].substr(1, requestLine[1].find('/', 1));
-	location = routeExists(location);
-	std::cout << BLUE <<  "location: " <<  location << "\n";
-	if (location == "") {
-		request.state = INVALID;
-		return ;
-	}
+	method = request.requestLine[0];
+	location = request.requestLine[1];
+	protocol = request.requestLine[2];
+	route = routeExists(location);
+	if (!protocolIsSupported(protocol))
+		return 505;
+	if (!route)
+		return 404;
+	if (!methodIsAllowed(method, route))
+		return 403;
+	return 200;
+}
 
+bool	Router::methodIsAllowed(std::string &method, std::map<std::string, std::string> *route) {
+	if (route->find("allowed_methods") != route->end()) {
+		return false;
+	}
+	if ((*route)["allowed_methods"].find(method) != std::string::npos) {
+		return true;
+	}
+	return false;
+}
+
+bool	Router::protocolIsSupported(std::string &protocol) {
+	if (protocol == "HTTP/1.1")
+		return true;
+	return false;
 }
