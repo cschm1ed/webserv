@@ -16,7 +16,7 @@ void RequestHandler::handleRequest(int fd, Host *socketOwner) {
 	t_request request = parseRequest(fd);
 	int state = 0;
 
-	if (request.requestLine.empty() || request.header["Host"] != socketOwner->getName()) {
+	if (request.splitRequestLine.empty() || request.header["Host"] != socketOwner->getName()) {
 		//<editor-fold desc="logging">
 		std::cout << RED << "error request on wrong host, sending " << state << std::endl;
 		std::cout << "Request for Host: '" << request.header["Host"] << "'";
@@ -39,13 +39,13 @@ void RequestHandler::handleRequest(int fd, Host *socketOwner) {
 t_request RequestHandler::parseRequest(int fd) {
 	std::stringstream requestStream;
 	t_request request;
+	std::string line;
 
 	Parser::fdToStringstream(fd, requestStream);
-	std::getline(requestStream, request.requestLine);
+	std::getline(requestStream, line);
+	request.splitRequestLine = Parser::splitByWhitespace(line);
 
 	{
-		std::string line;
-
 		while (std::getline(requestStream, line)) {
 			line.erase(std::remove(line.begin(), line.end(), '\r'));
 			if (requestStream.fail()) {
@@ -63,9 +63,9 @@ t_request RequestHandler::parseRequest(int fd) {
 	}
 
 	//<editor-fold desc="logging">
-	std::cout << GREEN << "got request: " << request.requestLine << std::endl;
+	std::cout << GREEN << "got request: ";
+	printVector(request.splitRequestLine);
 	printMap(request.header);
-	std::vector<std::string> requestLine = Parser::splitByWhitespace(request.requestLine);
 	//</editor-fold>
 	return request;
 }

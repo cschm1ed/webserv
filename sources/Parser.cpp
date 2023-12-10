@@ -12,6 +12,13 @@
 
 #include <webserv.hpp>
 
+struct IsNotSpace {
+	bool operator()(char c) {
+		return !std::isspace(static_cast<unsigned char>(c));
+	}
+};
+
+
 std::vector<std::string> Parser::splitBlocks(std::istream &ss, std::string const &identifier) {
 	std::vector<std::string> output;
 	std::string line;
@@ -19,7 +26,10 @@ std::vector<std::string> Parser::splitBlocks(std::istream &ss, std::string const
 	while (std::getline(ss, line)) {
 		if (!Parser::isComment(line) && line.find(identifier, 0) != std::string::npos) {
 			output.push_back(readBlock(ss));
-			line.erase(std::remove(line.begin(), line.end(), '{'), line.end());
+			if (line.find('{') != std::string::npos) {
+				line.erase(std::remove(line.begin(), line.end(), '{'), line.end());
+				line.erase(std::find_if(line.rbegin(), line.rend(), IsNotSpace()).base(), line.end());
+			}
 			output.back() += line;
 		}
 	}

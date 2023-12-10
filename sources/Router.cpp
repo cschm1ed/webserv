@@ -19,9 +19,9 @@ Router::Router(std::istream &serverConf) {
 
 	routesConf = Parser::splitBlocks(serverConf, "location");
 
-#ifdef DEBUG
+	//<editor-fold desc="logging">
 	std::cout << SYS_MSG GREEN"Debug: initializing router with routes: \n"R;
-#endif
+	//</editor-fold>
 
 	for (it = routesConf.begin(); it != routesConf.end(); ++it) {
 		std::stringstream ss;
@@ -30,13 +30,11 @@ Router::Router(std::istream &serverConf) {
 		routeConf = Parser::parseBlock(ss);
 		Parser::checkRoute(routeConf);
 		_routes.push_back(routeConf);
-
-#ifdef DEBUG
+		//<editor-fold desc="logging">
 		std::cout << "\n";
 		printMap(routeConf);
 		std::cout << "\n";
-#endif
-
+		//</editor-fold>
 	}
 }
 
@@ -49,34 +47,31 @@ std::map<std::string, std::string> *Router::routeExists(std::string &route) {
 	std::string root;
 
 	for (it = _routes.begin(); it != _routes.end(); ++it) {
-		root = (*it)["loaction"];
+		root = (*it)["location"];
 		if (route == "/") {
 			if (route == root)
 				return &(*it);
 		} else if (route.compare(0, root.size(), root, 0, root.size()) == 0)
 			return &(*it);
 	}
+	std::cout << RED <<  "did not find requested route: '"<< route << "'\n" << R;
 	return NULL;
 }
 
 int Router::checkRequestLine(t_request request) {
-	std::string location, method, protocol;
 	std::map<std::string, std::string> *route;
-	std::vector<std::string> splitLine = Parser::splitByWhitespace(request.requestLine);
 
-	if (splitLine.size() != 3) {
-		//<editor-fold desc="Description">
+	if (request.splitRequestLine.size() != 3) {
+		//<editor-fold desc="logging">
 		std::cout << RED << "ERROR: invalid request line\n";
-		std::cout << "request line: " << request.requestLine << "\n" << R;
+		std::cout << "request line: ";
+		printVector(request.splitRequestLine);
+		std::cout << R;
 		//</editor-fold>
-		request.state = INVALID;
 		return 400;
 	}
-	method = splitLine[0];
-	location = splitLine[1];
-	protocol = splitLine[2];
-	route = routeExists(location);
-	if (!protocolIsSupported(protocol)) {
+	route = routeExists(request.splitRequestLine[1]);
+	if (!protocolIsSupported(request.splitRequestLine[2])) {
 		//<editor-fold desc="logging">
 		std::cout << RED << "Error: Requested protocol is not supported\n" << R;
 		//</editor-fold>
@@ -88,8 +83,8 @@ int Router::checkRequestLine(t_request request) {
 		//</editor-fold>
 		return 404;
 	}
-	if (!methodIsAllowed(method, route)) {
-		//<editor-fold desc="Description">
+	if (!methodIsAllowed(request.splitRequestLine[0], route)) {
+		//<editor-fold desc="logging">
 		std::cout << RED << "Error: method is not allowed on this route\n" << R;
 		//</editor-fold>
 		return 403;
@@ -98,12 +93,19 @@ int Router::checkRequestLine(t_request request) {
 }
 
 bool Router::methodIsAllowed(std::string &method, std::map<std::string, std::string> *route) {
-	if (route->find("allowed_methods") != route->end()) {
+	if (route->find("allow_methods") == route->end()) {
+		//<editor-fold desc="logging">
+		std::cout << "no allowed routes configured\n";
+		//</editor-fold>
+
 		return false;
 	}
-	if ((*route)["allowed_methods"].find(method) != std::string::npos) {
+	if ((*route)["allow_methods"].find(method) != std::string::npos) {
 		return true;
 	}
+	//<editor-fold desc="logging">
+	std::cout << "method not allowed\n";
+	//</editor-fold>
 	return false;
 }
 
