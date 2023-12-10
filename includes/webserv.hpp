@@ -53,16 +53,13 @@ class Server;
 
 #define PATH_STD_ERRORPAGES "./resources/error_pages/"
 #define MAX_CONNECTIONS 5000
-#define INVALID -1
-#define DONE 1
-#define SEND 0;
 
 typedef struct s_request {
-	std::string requestLine;
+	std::vector<std::string> splitRequestLine;
 	std::map<std::string, std::string> header;
+	std::string requestedRoot;
+	std::string requestedResource;
 	const char *requestBody;
-	std::string returnFile;
-	int state;
 } t_request;
 
 int writeFiletoFd(int fdOut, const char *path);

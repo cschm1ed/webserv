@@ -94,6 +94,46 @@ void Host::sendErrorPage(int fd, int error) {
 	}
 }
 
+void Host::serveRequest(int fd, t_request &request) {
+	if (request.splitRequestLine[0] == "GET") {
+		serveGetRequest(fd, request);
+		return ;
+	}
+}
+
+void Host::serveGetRequest(int fd, t_request &request) {
+	std::string successHeader;
+
+	if (access(request.requestedResource.c_str(), F_OK) == -1) {
+		sendErrorPage(fd, 404);
+		//<editor-fold desc="Description">
+		std::cout << __FILE__ << " c:" << __LINE__ <<" requested resource not found\n";
+		//</editor-fold>
+		return ;
+	}
+	else if (access(request.requestedResource.c_str(), R_OK) == -1) {
+		//<editor-fold desc="Description">
+		std::cout << __FILE__ << " c:" << __LINE__ <<" requested resource permission denied\n";
+		//</editor-fold>
+		sendErrorPage(fd, 403);
+		return ;
+	}
+	successHeader = createSuccessHeader();
+	write(fd, successHeader.c_str(), successHeader.size());
+	writeFiletoFd(fd, request.requestedResource.c_str());
+}
+
+std::string Host::createSuccessHeader() {
+	std::stringstream header;
+
+	header << "HTTP/1.1 200 OK\r\n";
+	header << "Server: webserv\r\n";
+	header << "Content-Type: text/html; charset=UTF-8\r\n";
+	header << "Connection: close\r\n";
+	header << "\r\n\r\n";
+	return header.str();
+}
+
 Host::~Host() {
 //	delete _router;
 }
@@ -116,4 +156,8 @@ double Host::getPort() const {
 
 const std::string &Host::getName() const {
 	return _name;
+}
+
+Router *Host::getRouter() const {
+	return _router;
 }
