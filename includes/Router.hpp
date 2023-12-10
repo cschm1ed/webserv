@@ -18,7 +18,7 @@
 
 class Router {
 public:
-	int checkRequestLine(t_request request);
+	int checkRequestLine(t_request &request);
 	Router(std::istream & serverConf);
 	~Router();
 
@@ -26,6 +26,8 @@ private:
 	std::string _name;
 	std::vector<std::map<std::string, std::string> > _routes;
 	std::map<std::string, std::string> *routeExists(std::string & route);
+	std::string getRequestedRoot(std::string &requestedLocation);
+	std::string getRequestedRessource(t_request &request, std::map<std::string, std::string> &route);
 	bool methodIsAllowed(std::string & method, std::map<std::string, std::string> *route);
 	bool protocolIsSupported(std::string & protocol);
 

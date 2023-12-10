@@ -21,9 +21,9 @@ server {
         client_body_temp_path /path/to/save/uploads
     }
 
-    location / {
+    location /main {
         allow_methods GET
-        root /tmp/www
+        root ./resources/pages
     }
 
 }

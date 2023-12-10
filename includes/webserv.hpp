@@ -57,6 +57,8 @@ class Server;
 typedef struct s_request {
 	std::vector<std::string> splitRequestLine;
 	std::map<std::string, std::string> header;
+	std::string requestedRoot;
+	std::string requestedResource;
 	const char *requestBody;
 } t_request;
 

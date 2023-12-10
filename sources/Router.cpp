@@ -38,32 +38,25 @@ Router::Router(std::istream &serverConf) {
 	}
 }
 
-Router::~Router() {
-
-}
-
 std::map<std::string, std::string> *Router::routeExists(std::string &route) {
 	std::vector<std::map<std::string, std::string> >::iterator it;
-	std::string root;
+	std::string root = getRequestedRoot(route);
 
 	for (it = _routes.begin(); it != _routes.end(); ++it) {
-		root = (*it)["location"];
-		if (route == "/") {
-			if (route == root)
-				return &(*it);
-		} else if (route.compare(0, root.size(), root, 0, root.size()) == 0)
+		if (root ==  (*it)["location"]) {
 			return &(*it);
+		}
 	}
-	std::cout << RED <<  "did not find requested route: '"<< route << "'\n" << R;
+	std::cout << RED << __FILE__ << "c: " << __LINE__ << " did not find requested route: '"<< route << "' with root: '" << root << "' \n" << R;
 	return NULL;
 }
 
-int Router::checkRequestLine(t_request request) {
+int Router::checkRequestLine(t_request &request) {
 	std::map<std::string, std::string> *route;
 
 	if (request.splitRequestLine.size() != 3) {
 		//<editor-fold desc="logging">
-		std::cout << RED << "ERROR: invalid request line\n";
+		std::cout << RED << __FILE__ << "c:" << __LINE__ << " ERROR: invalid request line\n";
 		std::cout << "request line: ";
 		printVector(request.splitRequestLine);
 		std::cout << R;
@@ -73,13 +66,13 @@ int Router::checkRequestLine(t_request request) {
 	route = routeExists(request.splitRequestLine[1]);
 	if (!protocolIsSupported(request.splitRequestLine[2])) {
 		//<editor-fold desc="logging">
-		std::cout << RED << "Error: Requested protocol is not supported\n" << R;
+		std::cout << RED << __FILE__ << "c:" << __LINE__ << " Error: Requested protocol is not supported\n" << R;
 		//</editor-fold>
 		return 505;
 	}
 	if (!route) {
 		//<editor-fold desc="logging">
-		std::cout << RED << "Error: route does not exist\n" << R;
+		std::cout << RED << __FILE__ << "c:" << __LINE__ <<" Error: route does not exist\n" << R;
 		//</editor-fold>
 		return 404;
 	}
@@ -89,6 +82,8 @@ int Router::checkRequestLine(t_request request) {
 		//</editor-fold>
 		return 403;
 	}
+	request.requestedRoot = (*route) ["location"];
+	request.requestedResource = getRequestedRessource(request, *route);
 	return 200;
 }
 
@@ -113,4 +108,29 @@ bool Router::protocolIsSupported(std::string &protocol) {
 	if (protocol == "HTTP/1.1")
 		return true;
 	return false;
+}
+
+std::string Router::getRequestedRoot(std::string &requestedLocation) {
+	if (requestedLocation.find('/', 0) == std::string::npos) {
+		return requestedLocation;
+	}
+	if (requestedLocation == "/") {
+		return "/";
+	}
+	return requestedLocation.substr(0, requestedLocation.find('/', 1));
+}
+
+std::string Router::getRequestedRessource(t_request &request, std::map<std::string, std::string> &route) {
+	std::string location = request.splitRequestLine[1];
+
+	location.erase(0, request.requestedRoot.size());
+	location = route["root"] + location;
+	//<editor-fold desc="Description">
+	std::cout << BLUE << __FILE__ << " c:" << __LINE__ << " requested file: " << location << "\n"R;
+	//</editor-fold>
+	return location;
+}
+
+Router::~Router() {
+
 }

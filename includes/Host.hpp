@@ -27,18 +27,20 @@ public:
 	void setIp(const std::string &ip);
 	void setPort(double port);
 	double getPort() const;
+	Router *getRouter() const;
 
 	const std::string &getName() const;
 	void sendErrorPage(int fd, int error);
 
-	Router *getRouter() const;
+	void serveRequest(int fd, t_request &request);
 
 private:
-
 	std::string _name;
 	std::string _IP;
 	std::map<int, std::string> _error_pages;
 	std::string createErrorHeader(int errorCode);
+	std::string createSuccessHeader();
+	void serveGetRequest(int fd, t_request &request);
 	double _maxBodySize;
 	double _port;
 

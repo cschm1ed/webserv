@@ -32,7 +32,7 @@ void RequestHandler::handleRequest(int fd, Host *socketOwner) {
 		//</editor-fold>
 		return ;
 	}
-
+	socketOwner->serveRequest(fd, request);
 	return ;
 }
 
