@@ -1,6 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
+/*   Host.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cschmied <cschmied@student.42wolfsburg.d>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/12/10 15:39:04 by cschmied          #+#    #+#             */
+/*   Updated: 2023/12/17 17:29:29 by cschmied         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
 /*   Host.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cschmied <cschmied@student.42wolfsburg.d>  +#+  +:+       +#+        */
@@ -73,6 +85,22 @@ std::string Host::createErrorHeader(int errorCode) {
 	return output.str();
 }
 
+std::string Host::createSuccessHeader(t_request &request) {
+	std::stringstream header;
+
+	header << "HTTP/1.1 200 OK\r\n";
+	header << "Server: webserv\r\n";
+	if (request.header["Accept"].find("text/html") != std::string::npos) {
+		header << "content-Type: text/html; charset=UTF-8\r\n";
+	}
+	else {
+		header << "content-type: image/jpeg\r\n";
+	}
+	header << "Content-Length: " << getFileSize(request.requestedResource) << "\r\n";
+	header << "Connection: close\r\n";
+	header << "\r\n";
+	return header.str();
+}
 
 void Host::sendErrorPage(int fd, int error) {
 	std::stringstream errorPagePath;
@@ -101,8 +129,15 @@ void Host::serveRequest(int fd, t_request &request) {
 	}
 }
 
+int Host::getFileSize(std::string &path) {
+	std::ifstream in(path.c_str(), std::ifstream::ate | std::ifstream::binary);
+	if (!in.is_open())
+		return 0;
+	return static_cast<int>(in.tellg());
+}
+
 void Host::serveGetRequest(int fd, t_request &request) {
-	std::string successHeader;
+	t_response response;
 
 	if (access(request.requestedResource.c_str(), F_OK) == -1) {
 		sendErrorPage(fd, 404);
@@ -118,20 +153,9 @@ void Host::serveGetRequest(int fd, t_request &request) {
 		sendErrorPage(fd, 403);
 		return ;
 	}
-	successHeader = createSuccessHeader();
-	write(fd, successHeader.c_str(), successHeader.size());
+	response.header = createSuccessHeader(request);
+	write(fd, response.header.c_str(), response.header.size());
 	writeFiletoFd(fd, request.requestedResource.c_str());
-}
-
-std::string Host::createSuccessHeader() {
-	std::stringstream header;
-
-	header << "HTTP/1.1 200 OK\r\n";
-	header << "Server: webserv\r\n";
-	header << "Content-Type: text/html; charset=UTF-8\r\n";
-	header << "Connection: close\r\n";
-	header << "\r\n\r\n";
-	return header.str();
 }
 
 Host::~Host() {

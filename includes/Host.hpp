@@ -39,7 +39,8 @@ private:
 	std::string _IP;
 	std::map<int, std::string> _error_pages;
 	std::string createErrorHeader(int errorCode);
-	std::string createSuccessHeader();
+	std::string createSuccessHeader(t_request &request);
+	static int getFileSize(std::string & path);
 	void serveGetRequest(int fd, t_request &request);
 	double _maxBodySize;
 	double _port;

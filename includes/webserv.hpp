@@ -62,6 +62,11 @@ typedef struct s_request {
 	const char *requestBody;
 } t_request;
 
+typedef struct s_response {
+	std::string header;
+	std::string requestedResource;
+} t_response;
+
 int writeFiletoFd(int fdOut, const char *path);
 int handleRequest(int fd);
 int handleGetRequest(t_request & request, int fd);
