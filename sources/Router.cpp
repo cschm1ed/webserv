@@ -92,14 +92,15 @@ bool Router::methodIsAllowed(std::string &method, std::map<std::string, std::str
 		//<editor-fold desc="logging">
 		std::cout << "no allowed routes configured\n";
 		//</editor-fold>
-
 		return false;
 	}
 	if ((*route)["allow_methods"].find(method) != std::string::npos) {
 		return true;
 	}
 	//<editor-fold desc="logging">
-	std::cout << "method not allowed\n";
+	std::cout << R << __FILE__ << " c: " << __LINE__ << " method: " << method << " not allowed\n";
+	std::cout << "route: ";
+	printMap(*route);
 	//</editor-fold>
 	return false;
 }

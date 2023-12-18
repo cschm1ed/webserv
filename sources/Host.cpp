@@ -85,7 +85,7 @@ std::string Host::createErrorHeader(int errorCode) {
 	return output.str();
 }
 
-std::string Host::createSuccessHeader(t_request &request) {
+std::string Host::createSuccessHeaderGet(t_request &request) {
 	std::stringstream header;
 
 	header << "HTTP/1.1 200 OK\r\n";
@@ -127,6 +127,10 @@ void Host::serveRequest(int fd, t_request &request) {
 		serveGetRequest(fd, request);
 		return ;
 	}
+	else if (request.splitRequestLine[0] == "DELETE") {
+		serveDeleteRequest(fd, request);
+		return ;
+	}
 }
 
 int Host::getFileSize(std::string &path) {
@@ -141,21 +145,65 @@ void Host::serveGetRequest(int fd, t_request &request) {
 
 	if (access(request.requestedResource.c_str(), F_OK) == -1) {
 		sendErrorPage(fd, 404);
-		//<editor-fold desc="Description">
+		//<editor-fold desc="logging">
 		std::cout << __FILE__ << " c:" << __LINE__ <<" requested resource not found\n";
 		//</editor-fold>
 		return ;
 	}
 	else if (access(request.requestedResource.c_str(), R_OK) == -1) {
-		//<editor-fold desc="Description">
+		//<editor-fold desc="logging">
 		std::cout << __FILE__ << " c:" << __LINE__ <<" requested resource permission denied\n";
 		//</editor-fold>
 		sendErrorPage(fd, 403);
 		return ;
 	}
-	response.header = createSuccessHeader(request);
+	response.header = createSuccessHeaderGet(request);
 	write(fd, response.header.c_str(), response.header.size());
 	writeFiletoFd(fd, request.requestedResource.c_str());
+}
+
+void Host::serveDeleteRequest(int fd, t_request &request) {
+	t_response response;
+
+	if (access(request.requestedResource.c_str(), F_OK) == -1) {
+		sendErrorPage(fd, 404);
+		//<editor-fold desc="logging">
+		std::cout << __FILE__ << " c: " << __LINE__ << "resource to delete not found\n";
+		//</editor-fold>
+		return ;
+	}
+	else if (access(request.requestedResource.c_str(), W_OK) == -1) {
+		//<editor-fold desc="logging">
+		std::cout << __FILE__ << " c:" << __LINE__ <<" resource to delete permission denied\n";
+		//</editor-fold>
+		sendErrorPage(fd, 403);
+		return ;
+	}
+	if (std::remove(request.requestedResource.c_str()) != 0) {
+		sendErrorPage(fd, 500);
+		//<editor-fold desc="logging">
+		std::cout << __FILE__ << " c:" << __LINE__ <<" failed deleting resource\n";
+		//</editor-fold>
+		return ;
+	}
+	response.header = createSuccessHeaderDelete(request);
+	write(fd, response.header.c_str(), response.header.size());
+	//<editor-fold desc="logging">
+	std::cout <<"serverd delete request: ";
+	std::cout << response.header;
+	//</editor-fold>
+	return ;
+}
+
+std::string Host::createSuccessHeaderDelete(t_request &request) {
+	std::stringstream header;
+
+	header << "HTTP/1.1 204 OK\r\n";
+	header << "Server: webserv\r\n";
+	header << "Connection: close\r\n";
+	header << "\r\n";
+	(void)request ;
+	return header.str();
 }
 
 Host::~Host() {

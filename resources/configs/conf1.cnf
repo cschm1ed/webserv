@@ -26,4 +26,13 @@ server {
         root ./resources/pages
     }
 
+    location /test_delete {
+        allow_methods DELETE
+        root ./resources/pages/test_resources
+    }
+
 }
+
+DELETE /main/test_delete/delete_me.txt HTTP/1.1
+
+Host: 127.0.0.1:8080
