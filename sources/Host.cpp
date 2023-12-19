@@ -131,6 +131,10 @@ void Host::serveRequest(int fd, t_request &request) {
 		serveDeleteRequest(fd, request);
 		return ;
 	}
+	else if (request.splitRequestLine[0] == "POST") {
+		serverPostRequest(fd, request);
+		return ;
+	}
 }
 
 int Host::getFileSize(std::string &path) {
@@ -195,6 +199,25 @@ void Host::serveDeleteRequest(int fd, t_request &request) {
 	return ;
 }
 
+void Host::serverPostRequest(int fd, t_request &request) {
+	t_response response;
+	int fdOut, ret = 0;
+
+	fdOut = open(request.requestedResource.c_str(), O_CREAT | O_WRONLY | O_TRUNC | O_NONBLOCK);
+	if (fdOut == -1 ||
+			(ret = write(fdOut, request.requestBody, strlen(request.requestBody))) == -1) {
+		//<editor-fold desc="Description">
+		std::cout << __FILE__ << " c: " << __LINE__ << ": could not server post request\n";
+		std::cout << "open: " << fdOut << " write: " << ret << "\n";
+		perror("open/write");
+		//</editor-fold>
+		sendErrorPage(fd, 500);
+		return ;
+	}
+	std::cout << "Succesfully serverd post request";
+	return ;
+}
+
 std::string Host::createSuccessHeaderDelete(t_request &request) {
 	std::stringstream header;
 
@@ -204,6 +227,34 @@ std::string Host::createSuccessHeaderDelete(t_request &request) {
 	header << "\r\n";
 	(void)request ;
 	return header.str();
+}
+
+std::string Host::createDirectoryListing(std::string & directory) {
+	std::stringstream dirListing;
+	DIR *dirStream;
+	struct dirent *dirEntry;
+
+	if ((dirStream = opendir(directory.c_str())) == NULL || (dirEntry = readdir(dirStream)) == NULL) {
+		return "";
+	}
+	dirListing << "<!DOCTYPE html>\n"
+				  "<html>\n"
+				  "<head>\n"
+				  "    <title>Index of /directory</title>\n"
+				  "</head>\n"
+				  "<body>\n"
+				  "    <h1>Index of /directory</h1>\n"
+				  "    <ul>\n";
+
+	while ((dirEntry = readdir(dirStream)) != nullptr) {
+		dirListing << "<li><a href=\"" << dirEntry << "\">" << dirEntry << "</a><<\\li>\n";
+	}
+
+	dirListing <<   "</ul>\n"
+					"</body>\n"
+					"</html>\n";
+	closedir(dirStream);
+	return dirListing.str();
 }
 
 Host::~Host() {

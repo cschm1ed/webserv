@@ -46,6 +46,7 @@ class Server;
 #include <Server.hpp>
 #include <Router.hpp>
 #include <Parser.hpp>
+#include <dirent.h>
 
 #ifdef __linux__
 # include <sys/sendfile.h>

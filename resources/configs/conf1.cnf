@@ -31,6 +31,11 @@ server {
         root ./resources/pages/test_resources
     }
 
+    location /test_post {
+        allow_methods POST
+        root ./resources/pages/test_resources
+    }
+
 }
 
 DELETE /main/test_delete/delete_me.txt HTTP/1.1
