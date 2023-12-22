@@ -47,6 +47,11 @@ std::map<std::string, std::string> *Router::routeExists(std::string &route) {
 			return &(*it);
 		}
 	}
+	for (it = _routes.begin(); it != _routes.end(); ++it) {
+		if ((*it)["location"] == "/") {
+			return &(*it);
+		}
+	}
 	std::cout << RED << __FILE__ << "c: " << __LINE__ << " did not find requested route: '"<< route << "' with root: '" << root << "' \n" << R;
 	return NULL;
 }
@@ -112,10 +117,7 @@ bool Router::protocolIsSupported(std::string &protocol) {
 }
 
 std::string Router::getRequestedRoot(std::string &requestedLocation) {
-	if (requestedLocation.find('/', 0) == std::string::npos) {
-		return requestedLocation;
-	}
-	if (requestedLocation == "/") {
+	if (requestedLocation.find('/', 1) == std::string::npos) {
 		return "/";
 	}
 	return requestedLocation.substr(0, requestedLocation.find('/', 1));
@@ -124,7 +126,9 @@ std::string Router::getRequestedRoot(std::string &requestedLocation) {
 std::string Router::getRequestedRessource(t_request &request, std::map<std::string, std::string> &route) {
 	std::string location = request.splitRequestLine[1];
 
-	location.erase(0, request.requestedRoot.size());
+	if (request.requestedRoot != "/") {
+		location.erase(0, request.requestedRoot.size());
+	}
 	location = route["root"] + location;
 	//<editor-fold desc="Description">
 	std::cout << BLUE << __FILE__ << " c:" << __LINE__ << " requested file: " << location << "\n"R;
