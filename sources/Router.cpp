@@ -129,6 +129,9 @@ std::string Router::getRequestedRessource(t_request &request, std::map<std::stri
 	if (request.requestedRoot != "/") {
 		location.erase(0, request.requestedRoot.size());
 	}
+	if (location.empty() || location == "/") {
+		location += "index.html";
+	}
 	location = route["root"] + location;
 	//<editor-fold desc="Description">
 	std::cout << BLUE << __FILE__ << " c:" << __LINE__ << " requested file: " << location << "\n"R;
