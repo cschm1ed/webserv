@@ -18,7 +18,7 @@
 
 class Router {
 public:
-	static std::string getIndex(std::string & dirPath);
+	static std::string getIndex(std::string &dirPath, std::map<std::string, std::string> &route);
 	int checkRequestLine(t_request &request);
 	Router(std::istream & serverConf);
 

@@ -136,12 +136,15 @@ std::string Router::getRequestedRessource(t_request &request, std::map<std::stri
 	return location;
 }
 
-std::string Router::getIndex(std::string & dirPath) {
+std::string Router::getIndex(std::string &dirPath, std::map<std::string, std::string> &route) {
 	DIR *dirStream;
 	struct dirent *dirEntry;
 
 	if ((dirStream = opendir(dirPath.c_str())) == nullptr) {
 		return "";
+	}
+	if (route.find("index") != route.end()) {
+		return dirPath + "/" + route["index"];
 	}
 	while ((dirEntry = readdir(dirStream)) != nullptr) {
 		if (strcmp(dirEntry->d_name, "index.html") == 0

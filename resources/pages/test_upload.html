@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>File Upload & Delete</title>
+    <script>
+        // Function to handle file upload via POST request
+        function uploadFile() {
+            var formData = new FormData();
+            var fileField = document.querySelector("input[type='file']");
+
+            formData.append('file', fileField.files[0]);
+
+            fetch('/test_post', { // Updated to use the /test_post route
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(result => {
+                    console.log('Success:', result);
+                    alert('File uploaded successfully!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error uploading file!');
+                });
+        }
+
+        // Function to handle file deletion via DELETE request
+        function deleteFile() {
+            var fileName = document.getElementById('filename').value;
+            fetch('/test_delete', { // Updated to use the /test_delete route
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ filename: fileName })
+            })
+                .then(response => response.json())
+                .then(result => {
+                    console.log('Success:', result);
+                    alert('File deleted successfully!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error deleting file!');
+                });
+        }
+    </script>
+</head>
+<body>
+<h1>File Upload & Delete</h1>
+<!-- Form to upload file -->
+<input type="file" name="file" />
+<button onclick="uploadFile()">Upload</button>
+
+<!-- Input to delete file by name -->
+<input type="text" id="filename" placeholder="Enter file name to delete" />
+<button onclick="deleteFile()">Delete</button>
+</body>
+</html>

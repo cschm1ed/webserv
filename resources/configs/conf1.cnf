@@ -29,6 +29,7 @@ server {
     location /main {
         allow_methods GET
         root ./resources/pages
+        index serious.html
     }
 
     location /test_delete {
@@ -38,6 +39,7 @@ server {
 
     location /test_post {
         allow_methods POST
+        client_body_temp_path ./resources/test_resources/upload
         root ./resources/pages/test_resources
     }
 
@@ -47,7 +49,3 @@ server {
         autoindex on
     }
 }
-
-DELETE /main/test_delete/delete_me.txt HTTP/1.1
-
-Host: 127.0.0.1:8080

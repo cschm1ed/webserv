@@ -10,18 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Host.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: cschmied <cschmied@student.42wolfsburg.d>  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/14 11:08:03 by cschmied          #+#    #+#             */
-/*   Updated: 2023/09/14 11:10:24 by cschmied         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include <webserv.hpp>
 
 Host::Host(std::istream & configuration) : _router(NULL) {
@@ -144,7 +132,7 @@ void Host::serveRequest(int fd, t_request &request) {
 		return ;
 	}
 	else if (request.splitRequestLine[0] == "POST") {
-		serverPostRequest(fd, request);
+		servePostRequest(fd, request);
 		return ;
 	}
 }
@@ -159,8 +147,9 @@ int Host::getFileSize(std::string &path) {
 void Host::senddir(int fd, t_request &request) {
 	std::string index, header, dirListing;
 
-	index = Router::getIndex(request.requestedResource);
+	index = Router::getIndex(request.requestedResource, *request.route);
 	if (index != "dirListing") {
+		request.requestedResource = index;
 		header = createSuccessHeaderGet(request);
 		write(fd, header.c_str(), header.size());
 		writeFiletoFd(fd, index.c_str());
@@ -238,7 +227,7 @@ void Host::serveDeleteRequest(int fd, t_request &request) {
 	return ;
 }
 
-void Host::serverPostRequest(int fd, t_request &request) {
+void Host::servePostRequest(int fd, t_request &request) {
 	t_response response;
 	int fdOut, ret = 0;
 
@@ -253,8 +242,22 @@ void Host::serverPostRequest(int fd, t_request &request) {
 		sendErrorPage(fd, 500);
 		return ;
 	}
+	response.header = createSuccessHeaderPost(request);
+	write(fd, response.header.c_str(), response.header.size());
 	std::cout << "Succesfully serverd post request";
 	return ;
+}
+
+
+std::string Host::createSuccessHeaderPost(t_request &request) {
+	std::stringstream header;
+
+	header << "HTTP/1.1 201 OK\r\n";
+	header << "Server: webserv\r\n";
+	header << "Connection: close\r\n";
+	header << "Location: " << request.splitRequestLine[0];
+	header << "\r\n";
+	return header.str();
 }
 
 std::string Host::createSuccessHeaderDelete(t_request &request) {
