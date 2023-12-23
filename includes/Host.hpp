@@ -42,7 +42,9 @@ private:
 	std::string createErrorHeader(int errorCode);
 	std::string createSuccessHeaderGet(t_request &request);
 	std::string createSuccessHeaderDelete(t_request &request);
-	std::string createDirectoryListing(std::string & directory);
+	std::string createDirectoryListing(std::string &directory, t_request &request);
+	std::string createSuccessHeaderDirListing(std::string & listing);
+	void senddir(int fd, t_request & request);
 	static int getFileSize(std::string & path);
 	void serverPostRequest(int fd, t_request & request);
 	void serveGetRequest(int fd, t_request &request);

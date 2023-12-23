@@ -18,10 +18,11 @@
 
 class Router {
 public:
+	static std::string getIndex(std::string & dirPath);
 	int checkRequestLine(t_request &request);
 	Router(std::istream & serverConf);
-	~Router();
 
+	~Router();
 private:
 	std::string _name;
 	std::vector<std::map<std::string, std::string> > _routes;

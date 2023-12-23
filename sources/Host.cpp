@@ -85,6 +85,18 @@ std::string Host::createErrorHeader(int errorCode) {
 	return output.str();
 }
 
+std::string Host::createSuccessHeaderDirListing(std::string &listing) {
+	std::stringstream header;
+
+	header << "HTTP/1.1 200 OK\r\n";
+	header << "Server: webserv\r\n";
+	header << "content-Type: text/html; charset=UTF-8\r\n";
+	header << "Content-Length:" << listing.size() << "\r\n";
+	header << "Connection: close\r\n";
+	header << "\r\n";
+	return header.str();
+}
+
 std::string Host::createSuccessHeaderGet(t_request &request) {
 	std::stringstream header;
 
@@ -144,9 +156,36 @@ int Host::getFileSize(std::string &path) {
 	return static_cast<int>(in.tellg());
 }
 
+void Host::senddir(int fd, t_request &request) {
+	std::string index, header, dirListing;
+
+	index = Router::getIndex(request.requestedResource);
+	if (index != "dirListing") {
+		header = createSuccessHeaderGet(request);
+		write(fd, header.c_str(), header.size());
+		writeFiletoFd(fd, index.c_str());
+		return ;
+	}
+	else if (index == "dirListing" && (*request.route)["autoindex"] == "on") {
+		dirListing = createDirectoryListing(request.requestedResource, request);
+		header = createSuccessHeaderDirListing(dirListing);
+		write(fd, header.c_str(), header.size());
+		write(fd, dirListing.c_str(), dirListing.size());
+		return ;
+	}
+	sendErrorPage(fd, 404);
+}
+
 void Host::serveGetRequest(int fd, t_request &request) {
 	t_response response;
+	DIR *dirStr;
 
+	dirStr = opendir((request.requestedResource).c_str());
+	if (dirStr != nullptr) {
+		closedir(dirStr);
+		senddir(fd, request);
+		return ;
+	}
 	if (access(request.requestedResource.c_str(), F_OK) == -1) {
 		sendErrorPage(fd, 404);
 		//<editor-fold desc="logging">
@@ -229,12 +268,12 @@ std::string Host::createSuccessHeaderDelete(t_request &request) {
 	return header.str();
 }
 
-std::string Host::createDirectoryListing(std::string & directory) {
+std::string Host::createDirectoryListing(std::string &directory, t_request &request) {
 	std::stringstream dirListing;
 	DIR *dirStream;
 	struct dirent *dirEntry;
 
-	if ((dirStream = opendir(directory.c_str())) == NULL || (dirEntry = readdir(dirStream)) == NULL) {
+	if ((dirStream = opendir(directory.c_str())) == nullptr || (dirEntry = readdir(dirStream)) == nullptr) {
 		return "";
 	}
 	dirListing << "<!DOCTYPE html>\n"
@@ -247,7 +286,7 @@ std::string Host::createDirectoryListing(std::string & directory) {
 				  "    <ul>\n";
 
 	while ((dirEntry = readdir(dirStream)) != nullptr) {
-		dirListing << "<li><a href=\"" << dirEntry << "\">" << dirEntry << "</a><<\\li>\n";
+		dirListing << "<li><a href=\"" << (request.splitRequestLine[1] + "/" + dirEntry->d_name) << "\">" << dirEntry->d_name << "</a></li>\n";
 	}
 
 	dirListing <<   "</ul>\n"

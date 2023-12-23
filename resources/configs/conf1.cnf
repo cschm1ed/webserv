@@ -41,6 +41,11 @@ server {
         root ./resources/pages/test_resources
     }
 
+    location /test_autoindex {
+        allow_methods GET
+        root ./resources
+        autoindex on
+    }
 }
 
 DELETE /main/test_delete/delete_me.txt HTTP/1.1
