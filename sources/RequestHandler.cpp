@@ -32,16 +32,29 @@ void RequestHandler::handleRequest(int fd, Host *socketOwner) {
 		//</editor-fold>
 		return ;
 	}
+
 	socketOwner->serveRequest(fd, request);
 	return ;
 }
 
 t_request RequestHandler::parseRequest(int fd) {
-	std::stringstream requestStream;
 	t_request request;
 	std::string line;
+	std::string requestString;
+	char buffer[2];
+	int bytesRead;
 
-	Parser::fdToStringstream(fd, requestStream);
+	buffer[1] = 0;
+	while ((bytesRead = read(fd, buffer, 1)) > 0) {
+		requestString += buffer;
+		if (requestString.find("\r\n\r\n") != std::string::npos) {
+			break ;
+		}
+	}
+	if (bytesRead == -1) {
+		return request;
+	}
+	std::stringstream requestStream(requestString);
 	std::getline(requestStream, line);
 	request.splitRequestLine = Parser::splitByWhitespace(line);
 
@@ -58,10 +71,8 @@ t_request RequestHandler::parseRequest(int fd) {
 			unsigned long pos = line.find(": ", 0);
 			request.header[line.substr(0, pos)] = line.substr(pos + 2);
 		}
-		std::string tmp = requestStream.str();
-		request.requestBody = tmp.c_str();
 	}
-
+	request.socketFd = fd;
 	//<editor-fold desc="logging">
 	std::cout << GREEN << "got request: ";
 	printVector(request.splitRequestLine);

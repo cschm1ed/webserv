@@ -158,6 +158,11 @@ void Parser::checkRoute(std::map<std::string, std::string> &conf) {
 			throw MyException("Config invalid. identifier: " + it->first + " invalid", __FILE__, __LINE__);
 		}
 	}
+	if (conf["allow_methods"].find("POST") != std::string::npos) {
+		if (conf.find("client_body_temp_path") == conf.end()) {
+			throw MyException("Config invalid. Allowing POST requires client_body_temp_path", __FILE__, __LINE__);
+		}
+	}
 }
 
 bool Parser::isComment(std::string line) {
@@ -201,7 +206,7 @@ int Parser::fdToStringstream(int fd, std::stringstream & request) {
 
 
 	do  {
-		readBytes = read(fd, buffer, 1023);
+		readBytes = read(fd, buffer, 1024);
 		if (readBytes < 0) {
 			perror("read(): ");
 			return -1;

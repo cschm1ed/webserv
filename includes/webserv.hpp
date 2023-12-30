@@ -62,6 +62,7 @@ typedef struct s_request {
 	std::string requestedRoot;
 	std::string requestedResource;
 	const char *requestBody;
+	int socketFd;
 } t_request;
 
 typedef struct s_response {
@@ -70,7 +71,6 @@ typedef struct s_response {
 } t_response;
 
 int writeFiletoFd(int fdOut, const char *path);
-int handleRequest(int fd);
-int handleGetRequest(t_request & request, int fd);
+
 
 #endif

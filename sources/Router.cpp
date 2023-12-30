@@ -156,6 +156,22 @@ std::string Router::getIndex(std::string &dirPath, std::map<std::string, std::st
 	return "dirListing";
 }
 
+std::string Router::getNewFileName(std::string &dir) {
+	int i = 0;
+	std::stringstream name;
+	DIR *dirStream = opendir(dir.c_str());
+	struct dirent *dirEntry;
+
+	if (!dirStream) {
+		return "";
+	}
+	while ((dirEntry = readdir(dirStream)) != nullptr) {
+		i++;
+	}
+	name << "uploaded_file";
+	name << i;
+	return name.str();
+}
 Router::~Router() {
 
 }

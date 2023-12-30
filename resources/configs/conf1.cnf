@@ -37,10 +37,16 @@ server {
         root ./resources/pages/test_resources
     }
 
+    location /test_post_and_delete {
+        allow_methods GET
+        root ./resources/pages/
+        index test_upload.html
+    }
+
     location /test_post {
         allow_methods POST
-        client_body_temp_path ./resources/test_resources/upload
-        root ./resources/pages/test_resources
+        client_body_temp_path ./resources/pages/test_resources/upload
+        root ./resources/pages/test_resources/
     }
 
     location /test_autoindex {

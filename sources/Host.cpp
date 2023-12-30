@@ -229,11 +229,14 @@ void Host::serveDeleteRequest(int fd, t_request &request) {
 
 void Host::servePostRequest(int fd, t_request &request) {
 	t_response response;
+	std::string filename;
+	char buffer[1024];
 	int fdOut, ret = 0;
 
-	fdOut = open(request.requestedResource.c_str(), O_CREAT | O_WRONLY | O_TRUNC | O_NONBLOCK);
-	if (fdOut == -1 ||
-			(ret = write(fdOut, request.requestBody, strlen(request.requestBody))) == -1) {
+	filename = Router::getNewFileName((*request.route)["client_body_temp_path"]);
+	request.requestedResource = (*request.route)["client_body_temp_path"] + "/" + filename;
+	fdOut = open(request.requestedResource.c_str(), O_CREAT | O_WRONLY, 0644);
+	if (fdOut == -1 ){
 		//<editor-fold desc="Description">
 		std::cout << __FILE__ << " c: " << __LINE__ << ": could not server post request\n";
 		std::cout << "open: " << fdOut << " write: " << ret << "\n";
@@ -242,9 +245,15 @@ void Host::servePostRequest(int fd, t_request &request) {
 		sendErrorPage(fd, 500);
 		return ;
 	}
+	while ((ret = read(request.socketFd, buffer, 1023)) == 1023) {
+		write(fdOut, buffer, ret);
+	}
+	if (ret > 0) {
+		write(fdOut, buffer, ret);
+	}
 	response.header = createSuccessHeaderPost(request);
 	write(fd, response.header.c_str(), response.header.size());
-	std::cout << "Succesfully serverd post request";
+	std::cout << "Succesfully serverd post request\n";
 	return ;
 }
 
@@ -255,7 +264,7 @@ std::string Host::createSuccessHeaderPost(t_request &request) {
 	header << "HTTP/1.1 201 OK\r\n";
 	header << "Server: webserv\r\n";
 	header << "Connection: close\r\n";
-	header << "Location: " << request.splitRequestLine[0];
+	header << "Location: " << request.requestedResource << "\r\n";
 	header << "\r\n";
 	return header.str();
 }
@@ -291,7 +300,6 @@ std::string Host::createDirectoryListing(std::string &directory, t_request &requ
 	while ((dirEntry = readdir(dirStream)) != nullptr) {
 		dirListing << "<li><a href=\"" << (request.splitRequestLine[1] + "/" + dirEntry->d_name) << "\">" << dirEntry->d_name << "</a></li>\n";
 	}
-
 	dirListing <<   "</ul>\n"
 					"</body>\n"
 					"</html>\n";
