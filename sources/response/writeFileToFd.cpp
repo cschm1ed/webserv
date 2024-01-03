@@ -23,7 +23,7 @@ int writeFiletoFd(int fdOut, const char *path) {
 		std::cout << RED << "ERROR: opening: " << path << "failed\n"R;
 		return -1;
 	}
-	if (sendfile(fdIn, fdOut, 0, &bytesToSend, NULL, 0) < 0) {
+	if (sendfile(fdIn, fdOut, 0, &bytesToSend, nullptr, 0) < 0) {
 		perror("sendfile(): ");
 		return -1;
 	}
@@ -37,7 +37,7 @@ int writeFiletoFd(int fdOut, const char *path) {
 
 int writeFiletoFd(int fdOut, const char *path) {
     int fdIn = open(path, O_RDONLY);
-    off_t offset = 0;
+    off_t bytesToSend = 0;
     struct stat stat_buf;
 
     if (fdIn < 0) {
@@ -50,7 +50,7 @@ int writeFiletoFd(int fdOut, const char *path) {
         close(fdIn);
         return -1;
     }
-    ssize_t sent_bytes = sendfile(fdOut, fdIn, &offset, stat_buf.st_size);
+    ssize_t sent_bytes = sendfile(fdOut, fdIn, &bytesToSend, stat_buf.st_size);
     if (sent_bytes < 0) {
         perror("sendfile()");
         close(fdIn);

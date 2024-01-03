@@ -12,7 +12,7 @@
 
 #include <webserv.hpp>
 
-Host::Host(std::istream & configuration) : _router(NULL) {
+Host::Host(std::istream & configuration) : _router(nullptr) {
 	std::stringstream cpy;
 
 	cpy.clear();
@@ -20,13 +20,11 @@ Host::Host(std::istream & configuration) : _router(NULL) {
 	configuration.clear();
 	configuration.seekg(0, std::ios_base::beg);
 	_config = Parser::parseBlock(cpy);
-
-#ifdef DEBUG
+	//<editor-fold desc="Description">
 	std::cout << SYS_MSG << GREEN"Debug: initializing host with config: \n"R;
 	printMap(_config);
 	std::cout << "\n";
-#endif
-
+	//</editor-fold>
 	_maxBodySize = Parser::parseInt(_config, "client_max_body_size");
 	_name = Parser::parseWord(_config, "server_name");
 	cpy.clear();
@@ -114,14 +112,15 @@ void Host::sendErrorPage(int fd, int error) {
 	}
 	errorPagePath << PATH_STD_ERRORPAGES  << "_site/" << error << ".html";
 	if (writeFiletoFd(fd, errorPagePath.str().c_str()) != 0) {
-		//errorHeader = createErrorHeader(500).c_str();
+		errorHeader = createErrorHeader(500);
 		errorHeader += "\n\nInternal Server Error";
 		write(fd, errorHeader.c_str(), errorHeader.size());
 	}
 }
 
 void Host::serveRequest(int fd, t_request &request) {
-	else if (request.splitRequestLine[0] == "GET") {
+
+	if (request.splitRequestLine[0] == "GET") {
 		serveGetRequest(fd, request);
 		return ;
 	}
@@ -168,8 +167,15 @@ void Host::senddir(int fd, t_request &request) {
 
 void Host::serveGetRequest(int fd, t_request &request) {
 	t_response response;
+	std::stringstream resp;
 	DIR *dirStr;
 
+	if (request.route->find("redirect") != request.route->end()) {
+		resp << "HTTP/1.1 307 Temporary Redirect" << "\r\n";
+		resp << "Location: " << (*request.route)["redirect"] << "\r\n\r\n";
+		write(fd, resp.str().c_str(), resp.str().size());
+		return ;
+	}
 	dirStr = opendir((request.requestedResource).c_str());
 	if (dirStr != nullptr) {
 		closedir(dirStr);
@@ -231,8 +237,7 @@ void Host::serveDeleteRequest(int fd, t_request &request) {
 void Host::servePostRequest(int fd, t_request &request) {
 	t_response response;
 	std::string filename;
-	char buffer[1024];
-	int fdOut, ret;
+	int fdOut, ret = 0;
 
 	filename = Router::getNewFileName((*request.route)["client_body_temp_path"]);
 	request.requestedResource = (*request.route)["client_body_temp_path"] + "/" + filename;
@@ -246,18 +251,22 @@ void Host::servePostRequest(int fd, t_request &request) {
 		sendErrorPage(fd, 500);
 		return ;
 	}
-	while ((ret = read(request.socketFd, buffer, 1023)) == 1023) {
-		write(fdOut, buffer, ret);
+	if (request.header["Transfer-Encoding"] == "chunked") {
+		if (writeChunkedSocketToFile(fd, fdOut) < 0) {
+			close(fdOut);
+			sendErrorPage(fd, 400);
+			return ;
+		}
 	}
-	if (ret > 0) {
-		write(fdOut, buffer, ret);
+	else {
+		writeSocketToFile(fd, fdOut);
 	}
+	close(fdOut);
 	response.header = createSuccessHeaderPost(request);
 	write(fd, response.header.c_str(), response.header.size());
-	std::cout << "Succesfully serverd post request\n";
+	std::cout << "Succesfully served post request\n";
 	return ;
 }
-
 
 std::string Host::createSuccessHeaderPost(t_request &request) {
 	std::stringstream header;
@@ -282,7 +291,7 @@ std::string Host::createSuccessHeaderDelete(t_request &request) {
 }
 
 std::string Host::createDirectoryListing(std::string &directory, t_request &request) {
-	std::stringstream dirListing;
+	std::stringstream dirListing, fileInfo;
 	DIR *dirStream;
 	struct dirent *dirEntry;
 
@@ -299,8 +308,8 @@ std::string Host::createDirectoryListing(std::string &directory, t_request &requ
 				  "    <ul>\n";
 
 	while ((dirEntry = readdir(dirStream)) != nullptr) {
-		dirListing << "<li><a href=\"" << (request.splitRequestLine[1] + "/" + dirEntry->d_name) << "\">"
-			<< dirEntry->d_name << "</a></li>\n";
+		dirListing	<< "<li><a href=\"" << (request.splitRequestLine[1] + "/" + dirEntry->d_name) << "\">"
+					<< dirEntry->d_name << "</a></li>\n";
 	}
 	dirListing <<   "</ul>\n"
 					"</body>\n"
@@ -310,7 +319,7 @@ std::string Host::createDirectoryListing(std::string &directory, t_request &requ
 }
 
 Host::~Host() {
-//	delete _router;
+//delete _router;
 }
 
 const std::string &Host::getIp() const {

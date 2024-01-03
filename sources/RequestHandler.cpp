@@ -25,7 +25,8 @@ void RequestHandler::handleRequest(int fd, Host &socketOwner) {
 		socketOwner.sendErrorPage(fd, 500);
 		return ;
 	}
-	if (request.splitRequestLine.empty() || request.header["Host"] != socketOwner.getName()) {
+	if (request.splitRequestLine.empty() ||
+			(request.header.find("Host") != request.header.end() && request.header["Host"] != socketOwner.getName())) {
 		//<editor-fold desc="logging">
 		std::cout << RED << "error request on wrong host, sending " << state << std::endl;
 		std::cout << "Request for Host: '" << request.header["Host"] << "'";
@@ -70,7 +71,6 @@ t_request RequestHandler::parseRequest(int fd) {
 		}
 	}
 	request.socketFd = fd;
-	request.isCGIRequest = false; //default
 	//<editor-fold desc="logging">
 	std::cout << GREEN << "got request: ";
 	printVector(request.splitRequestLine);

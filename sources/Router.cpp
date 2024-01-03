@@ -140,6 +140,9 @@ std::string Router::getIndex(std::string &dirPath, std::map<std::string, std::st
 	DIR *dirStream;
 	struct dirent *dirEntry;
 
+	if (route["autoindex"] == "on") {
+		return "dirListing";
+	}
 	if ((dirStream = opendir(dirPath.c_str())) == nullptr) {
 		return "";
 	}

@@ -131,25 +131,8 @@ std::string Parser::parseWord(std::map<std::string, std::string> &config, std::s
 	return value;
 }
 
-std::map<int, std::string> Parser::parseErrorPages(std::map<std::string, std::string> &config) {
-	std::map<int, std::string> output;
-	std::map<std::string, std::string>::const_iterator it;
-	int code;
-
-	for (it = config.begin(); it != config.end(); ++it) {
-		if (it->first.find("error_page_")) {
-			if (scanf(it->first.c_str(), "error_page_%d", &code) != strlen("error_page_XXX")
-				|| code < 0) {
-				throw MyException("Config invalid. error_page invalid", __FILE__, __LINE__);
-			}
-			output[code] = it->second;
-		}
-	}
-	return output;
-}
-
 void Parser::checkRoute(std::map<std::string, std::string> &conf) {
-    const char* array[] = {"allow_methods", "root", "autoindex", "index", "cgi_pass", "upload_path", "client_body_temp_path", "rewrite", "location"};
+    const char* array[] = {"allow_methods", "root", "autoindex", "index", "cgi_pass", "upload_path", "client_body_temp_path", "redirect", "location", "cgi_index"};
 	std::map<std::string, std::string>::const_iterator it;
     std::vector<std::string> allowed(array, array + sizeof(array) / sizeof(array[0]));
 

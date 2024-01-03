@@ -102,7 +102,7 @@ void Server::run() {
 	}
 }
 
- int Server::setFindMaxFd(fd_set &set) {
+int Server::setFindMaxFd(fd_set &set) {
 	for (int i = FD_SETSIZE; i > 0; --i) {
 		if (FD_ISSET(i, &set)) {
 			return i;

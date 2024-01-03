@@ -48,6 +48,7 @@ class Server;
 #include <Parser.hpp>
 #include <dirent.h>
 #include <sys/ioctl.h>
+#include <sys/stat.h>
 
 #ifdef __linux__
 # include <sys/sendfile.h>
@@ -64,7 +65,6 @@ typedef struct s_request {
 	std::string requestedResource;
 	const char *requestBody;
 	int socketFd;
-	bool isCGIRequest;
 } t_request;
 
 typedef struct s_response {
@@ -73,6 +73,7 @@ typedef struct s_response {
 } t_response;
 
 int writeFiletoFd(int fdOut, const char *path);
-
+int writeChunkedSocketToFile(int fdSocket, int fdFile);
+void writeSocketToFile(int fdSocket, int fdFile);
 
 #endif

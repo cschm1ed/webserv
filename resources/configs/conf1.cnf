@@ -1,9 +1,9 @@
 
 
 server {
-    client_max_body_size 9999
-    listen 127.0.0.1:8080
-    server_name 127.0.0.1:8080
+    client_max_body_size 9999999
+    listen 127.0.0.1:8000
+    server_name 127.0.0.1:8000
 
     error_page_404 /path/to/error_page.html
 
@@ -21,6 +21,11 @@ server {
         cgi_index   index.php
 
         client_body_temp_path /path/to/save/uploads
+    }
+
+    location /test_redirection {
+        allow_methods GET
+        redirect http://127.0.0.1:8080/main
     }
 
     location / {
