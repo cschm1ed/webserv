@@ -93,7 +93,7 @@ void Server::run() {
 					}
 				}
 				if (done == false) {
-					RequestHandler::handleRequest(fd, _clientFdToSocketOwner[fd]);
+					RequestHandler::handleRequest(fd, *_clientFdToSocketOwner[fd]);
 					FD_CLR(fd, &_incoming);
 					close(fd);
 				}

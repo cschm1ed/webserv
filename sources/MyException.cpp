@@ -25,15 +25,6 @@ MyException::~MyException() {
 
 }
 
-//MyException::MyException(const MyException &other) {
-//	_msg = other._msg;
-//}
-//
-//MyException &MyException::operator=(const MyException &other) {
-//	(void)other;
-//	return *this;
-//}
-
 const char *MyException::what() const throw() {
 	return _msg.c_str();
 }

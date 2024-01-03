@@ -47,6 +47,7 @@ class Server;
 #include <Router.hpp>
 #include <Parser.hpp>
 #include <dirent.h>
+#include <sys/ioctl.h>
 
 #ifdef __linux__
 # include <sys/sendfile.h>
@@ -63,6 +64,7 @@ typedef struct s_request {
 	std::string requestedResource;
 	const char *requestBody;
 	int socketFd;
+	bool isCGIRequest;
 } t_request;
 
 typedef struct s_response {

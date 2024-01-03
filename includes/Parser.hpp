@@ -24,11 +24,6 @@ public:
 	static std::map<std::string, std::string> parseBlock(std::istream & ss);
 	static bool isComment(std::string line);
 
-class ConfigError : public std::exception {
-public:
-	const char * what() const throw() ;
-};
-
 	static int parseInt(std::map<std::string, std::string> & config, std::string key);
 	static std::string parseWord(std::map<std::string, std::string> &config, std::string key);
 	static void parseHost(Host & server, std::map<std::string, std::string> & config);
@@ -37,7 +32,6 @@ public:
 	static bool notWhitespace(const char c);
 	static bool isWhitespace(const char c);
 	static std::vector<std::string>splitByWhitespace(const std::string & str);
-	static int fdToStringstream(int fd, std::stringstream & request);
 
 private:
 

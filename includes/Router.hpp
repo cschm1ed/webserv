@@ -22,8 +22,8 @@ public:
 	static std::string getNewFileName(std::string & dir);
 	int checkRequestLine(t_request &request);
 	Router(std::istream & serverConf);
-
 	~Router();
+
 private:
 	std::string _name;
 	std::vector<std::map<std::string, std::string> > _routes;

@@ -12,52 +12,49 @@
 
 #include <webserv.hpp>
 
-void RequestHandler::handleRequest(int fd, Host *socketOwner) {
-	t_request request = parseRequest(fd);
-	int state = 0;
 
-	if (request.splitRequestLine.empty() || request.header["Host"] != socketOwner->getName()) {
+void RequestHandler::handleRequest(int fd, Host &socketOwner) {
+	t_request request = parseRequest(fd);
+	int state;
+
+	if ((state = checkBodySize(socketOwner, fd)) == 0) {
+		socketOwner.sendErrorPage(fd, 400);
+		return ;
+	}
+	else if (state == -1) {
+		socketOwner.sendErrorPage(fd, 500);
+		return ;
+	}
+	if (request.splitRequestLine.empty() || request.header["Host"] != socketOwner.getName()) {
 		//<editor-fold desc="logging">
 		std::cout << RED << "error request on wrong host, sending " << state << std::endl;
 		std::cout << "Request for Host: '" << request.header["Host"] << "'";
-		std::cout << " | Socket Owner Name: '" << socketOwner->getName() << "'" << std::endl;
+		std::cout << " | Socket Owner Name: '" << socketOwner.getName() << "'" << std::endl;
 		//</editor-fold>
-		socketOwner->sendErrorPage(fd, 404);
+		socketOwner.sendErrorPage(fd, 404);
 		return ;
 	}
-	if ((state = socketOwner->getRouter()->checkRequestLine(request)) != 200) {
-		socketOwner->sendErrorPage(fd, state);
+	if ((state = socketOwner.getRouter()->checkRequestLine(request)) != 200) {
+		socketOwner.sendErrorPage(fd, state);
 		//<editor-fold desc="logging">
 		std::cout << RED << "invalid request or forbidden access\n" << R;
 		//</editor-fold>
 		return ;
 	}
-
-	socketOwner->serveRequest(fd, request);
+	socketOwner.serveRequest(fd, request);
 	return ;
 }
 
 t_request RequestHandler::parseRequest(int fd) {
 	t_request request;
 	std::string line;
-	std::string requestString;
-	char buffer[2];
-	int bytesRead;
 
-	buffer[1] = 0;
-	while ((bytesRead = read(fd, buffer, 1)) > 0) {
-		requestString += buffer;
-		if (requestString.find("\r\n\r\n") != std::string::npos) {
-			break ;
-		}
-	}
-	if (bytesRead == -1) {
+	std::stringstream requestStream(readHeader(fd));
+	std::getline(requestStream, line);
+	if (requestStream.fail()) {
 		return request;
 	}
-	std::stringstream requestStream(requestString);
-	std::getline(requestStream, line);
 	request.splitRequestLine = Parser::splitByWhitespace(line);
-
 	{
 		while (std::getline(requestStream, line)) {
 			line.erase(std::remove(line.begin(), line.end(), '\r'));
@@ -73,10 +70,46 @@ t_request RequestHandler::parseRequest(int fd) {
 		}
 	}
 	request.socketFd = fd;
+	request.isCGIRequest = false; //default
 	//<editor-fold desc="logging">
 	std::cout << GREEN << "got request: ";
 	printVector(request.splitRequestLine);
 	printMap(request.header);
 	//</editor-fold>
 	return request;
+}
+
+std::string RequestHandler::readHeader(int fd) {
+	std::string requestString;
+	int bytesRead;
+	char buffer[2];
+
+	while ((bytesRead = read(fd, buffer, 1)) > 0) {
+		requestString += *buffer;
+		if (requestString.find("\r\n\r\n") != std::string::npos) {
+			return requestString;
+		}
+	}
+	if (bytesRead == -1) {
+		return "";
+	}
+	return requestString;
+}
+
+int RequestHandler::checkBodySize(Host &socketOwner, int fd) {
+	int bytesAvailable;
+
+	if (ioctl(fd, FIONREAD, &bytesAvailable) >= 0) {
+		if (bytesAvailable > socketOwner.getMaxBodySize()) {
+			std::cout << __FILE__ << "c: "<< __LINE__ << " Bad request, body larger than max_body_size\n";
+			return 0;
+		}
+		return 1;
+	}
+	//<editor-fold desc="logging">
+	std::cout << RED;
+	perror("ioctl");
+	std::cout << R;
+	//</editor-fold>
+	return -1;
 }

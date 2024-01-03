@@ -12,8 +12,18 @@
 
 #include <webserv.hpp>
 
+Server *server = nullptr;
+
+void killServer(int signal) {
+	if (signal == SIGINT || server) {
+		delete server;
+		exit(1);
+	}
+}
+
 int main(int argc, char **argv) {
-	Server *server = NULL;
+
+	signal(SIGINT, killServer);
 
 	if (argc != 2) {
 		std::cout << SYS_MSG RED << "ERROR: invalid input\n" << R
@@ -29,6 +39,5 @@ int main(int argc, char **argv) {
 	}
 
 	server->run();
-
 	delete server;
 }

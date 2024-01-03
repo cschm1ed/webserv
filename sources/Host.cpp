@@ -29,13 +29,11 @@ Host::Host(std::istream & configuration) : _router(NULL) {
 
 	_maxBodySize = Parser::parseInt(_config, "client_max_body_size");
 	_name = Parser::parseWord(_config, "server_name");
-
 	cpy.clear();
 	cpy << configuration.rdbuf();
 	configuration.clear();
 	configuration.seekg(0, std::ios_base::beg);
 	_router = new Router(cpy);
-
 	Parser::parseHost(*this, _config);
 }
 
@@ -123,7 +121,7 @@ void Host::sendErrorPage(int fd, int error) {
 }
 
 void Host::serveRequest(int fd, t_request &request) {
-	if (request.splitRequestLine[0] == "GET") {
+	else if (request.splitRequestLine[0] == "GET") {
 		serveGetRequest(fd, request);
 		return ;
 	}
@@ -134,6 +132,9 @@ void Host::serveRequest(int fd, t_request &request) {
 	else if (request.splitRequestLine[0] == "POST") {
 		servePostRequest(fd, request);
 		return ;
+	}
+	else {
+		sendErrorPage(fd, 400);
 	}
 }
 
@@ -231,7 +232,7 @@ void Host::servePostRequest(int fd, t_request &request) {
 	t_response response;
 	std::string filename;
 	char buffer[1024];
-	int fdOut, ret = 0;
+	int fdOut, ret;
 
 	filename = Router::getNewFileName((*request.route)["client_body_temp_path"]);
 	request.requestedResource = (*request.route)["client_body_temp_path"] + "/" + filename;
@@ -298,7 +299,8 @@ std::string Host::createDirectoryListing(std::string &directory, t_request &requ
 				  "    <ul>\n";
 
 	while ((dirEntry = readdir(dirStream)) != nullptr) {
-		dirListing << "<li><a href=\"" << (request.splitRequestLine[1] + "/" + dirEntry->d_name) << "\">" << dirEntry->d_name << "</a></li>\n";
+		dirListing << "<li><a href=\"" << (request.splitRequestLine[1] + "/" + dirEntry->d_name) << "\">"
+			<< dirEntry->d_name << "</a></li>\n";
 	}
 	dirListing <<   "</ul>\n"
 					"</body>\n"
@@ -333,4 +335,8 @@ const std::string &Host::getName() const {
 
 Router *Host::getRouter() const {
 	return _router;
+}
+
+double Host::getMaxBodySize() const {
+	return _maxBodySize;
 }

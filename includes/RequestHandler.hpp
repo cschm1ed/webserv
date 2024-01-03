@@ -18,12 +18,13 @@
 
 class RequestHandler {
 public:
-	static void handleRequest(int fd, Host *socketOwner);
+	static void handleRequest(int fd, Host &socketOwner);
 
 
 private:
 	static t_request parseRequest(int fd);
-
+	static std::string readHeader(int fd);
+	static int checkBodySize(Host &socketOwner, int fd);
 	RequestHandler();
 	~RequestHandler();
 };

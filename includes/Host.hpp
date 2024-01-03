@@ -28,16 +28,12 @@ public:
 	void setPort(double port);
 	double getPort() const;
 	Router *getRouter() const;
-
 	const std::string &getName() const;
 	void sendErrorPage(int fd, int error);
-
 	void serveRequest(int fd, t_request &request);
+	double getMaxBodySize() const;
 
 private:
-
-	std::string _name;
-	std::string _IP;
 	std::map<int, std::string> _error_pages;
 	std::string createErrorHeader(int errorCode);
 	std::string createSuccessHeaderGet(t_request &request);
@@ -55,6 +51,8 @@ private:
 
 	std::map<std::string, std::string> _config;
 	Router *_router;
+	std::string _name;
+	std::string _IP;
 };
 
 
