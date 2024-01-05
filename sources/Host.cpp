@@ -318,6 +318,13 @@ std::string Host::createDirectoryListing(std::string &directory, t_request &requ
 	return dirListing.str();
 }
 
+void Host::serveCGIRequest(t_request &request) {
+	char **envVars;
+
+
+	execve(request.requestedResource.c_str(), nullptr, envVars);
+}
+
 Host::~Host() {
 //delete _router;
 }

@@ -111,7 +111,6 @@ int Server::setFindMaxFd(fd_set &set) {
 	return 0;
 }
 
-
 Server::~Server() {
 
 }

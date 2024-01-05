@@ -62,7 +62,7 @@ static inline int getChunkSize(int fdSocket) {
 	char buffer;
 	std::stringstream stream;
 
-	while (stream.str().find("\r\n") == std::string::npos) {
+	while (stream.str().find('\n') == std::string::npos) {
 		ret = read(fdSocket, &buffer, 1);
 		if (ret == -1) {
 			perror("read");

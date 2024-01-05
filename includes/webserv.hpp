@@ -19,6 +19,7 @@ class Router;
 class Host;
 class Parser;
 class Server;
+class Client;
 
 #include <iostream>
 #include <map>
@@ -49,6 +50,7 @@ class Server;
 #include <dirent.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
+#include <ctime>
 
 #ifdef __linux__
 # include <sys/sendfile.h>

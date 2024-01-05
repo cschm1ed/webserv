@@ -48,7 +48,7 @@ private:
 	void serveDeleteRequest(int fd, t_request &request);
 	double _maxBodySize;
 	double _port;
-
+	void serveCGIRequest(t_request &request);
 	std::map<std::string, std::string> _config;
 	Router *_router;
 	std::string _name;
