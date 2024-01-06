@@ -53,6 +53,18 @@ private:
 	Router *_router;
 	std::string _name;
 	std::string _IP;
+    static void createClientErrorHeader(std::stringstream &output, int errorCode);
+    static void createServerErrorHeader(std::stringstream &output, int errorCode);
+    void parseConfig(std::stringstream &cpy, std::istream &configuration);
+    void fillConfigStream(std::stringstream &cpy, std::istream &configuration);
+    void sendPermissionDeniedError(int fd);
+    void sendResourceNotFoundError(int fd);
+    void sendRedirectionResponse(int fd, t_request &request);
+    void sendSuccessfullGetRequest(int fd, t_request &request);
+    void sendServerFailDeleteResponse(int fd);
+    void sendSuccesfullDeleteResponse(int fd, t_request &request);
+    void sendServerFailPostResponse(int fd);
+    void sendSuccessfullPostResponse(int fd, t_request &request);
 };
 
 
